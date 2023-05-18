@@ -29,6 +29,13 @@ class Player(pygame.sprite.Sprite):
         self.weapon_index = 0
         self.weapon = list(weapon_data.keys())[self.weapon_index]
 
+        #stats
+        self.stats = {'health': 100,'energy': 60,'attack': 10,'magic': 4,'speed': 6}
+        self.health = self.stats['health']
+        self.energy = self.stats['energy']
+        self.exp = 123
+        self.speed = self.stats['speed']
+
     def import_player_assets(self):
         character_path = 'gameinfo/graphics/player/'
         self.animations = {'up': [],'down': [],'left': [],'right': [],
@@ -125,6 +132,7 @@ class Player(pygame.sprite.Sprite):
         if self.attacking:
             if current_time - self.attack_time >= self.attack_cooldown:
                 self.attacking = False
+                self.destroy_attack()
     
     def animate(self):
         animation = self.animations[self.status]
