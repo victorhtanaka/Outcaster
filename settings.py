@@ -25,5 +25,8 @@ UI_BORDER_COLOR_ACTIVE = 'gold'
 
 #weapon
 weapon_data = {
-    'sword': {'cooldown': 100, 'damage': 15, 'graphic':'gameinfo/graphics/weapons/sword/full.png'}
-}
+    'sword': {'cooldown': 100, 'damage': 15,'graphic':'gameinfo/graphics/weapons/sword/full.png'},
+    'lance': {'cooldown': 400, 'damage': 30,'graphic':'gameinfo/graphics/weapons/lance/full.png'},
+	'axe': {'cooldown': 300, 'damage': 20, 'graphic':'gameinfo/graphics/weapons/axe/full.png'},
+	'rapier':{'cooldown': 50, 'damage': 8, 'graphic':'gameinfo/graphics/weapons/rapier/full.png'},
+	'sai':{'cooldown': 80, 'damage': 10, 'graphic':'gameinfo/graphics/weapons/sai/full.png'}}
