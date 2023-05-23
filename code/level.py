@@ -4,12 +4,12 @@ from tile import Tile
 from player import Player
 from debug import debug
 from support import *
-import random
-from random import choice
+from random import choice, randint
 from weapon import Weapon
 from ui import UI
 from enemy import Enemy
 from particles import AnimationPlayer
+from magic import MagicPlayer
 
 class Level:
     def __init__(self):
@@ -34,6 +34,7 @@ class Level:
 
         # Particulas
         self.animation_player = AnimationPlayer()
+        self.magic_player = MagicPlayer(self.animation_player)
 
     def create_map(self):
         layouts = {
@@ -90,6 +91,12 @@ class Level:
         self.current_attack = Weapon(self.player, [self.visible_sprites,self.attack_sprites])
 
     def create_magic(self,style,strength,cost):
+        if style == 'heal':
+            self.magic_player.heal(self.player,strength,cost,[self.visible_sprites])
+
+        if style == 'flame':
+            self.magic_player.flame(self.player,cost,[self.visible_sprites, self.attack_sprites])
+
         print(style)
         print(strength)
         print(cost)
@@ -108,7 +115,7 @@ class Level:
                         if target_sprite.sprite_type == 'grass':
                             pos = target_sprite.rect.center
                             offset = pygame.math.Vector2(0,75)
-                            for leaf in range(random.randint(3,6)):
+                            for leaf in range(randint(3,6)):
                                 self.animation_player.create_grass_particle(pos - offset,[self.visible_sprites])
                             target_sprite.kill()
                         else:
