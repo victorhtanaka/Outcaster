@@ -20,14 +20,6 @@ class Enemy(Entity):
 		self.hitbox = self.rect.inflate(0,-10)
 		self.obstacle_sprites = obstacle_sprites
 
-		# Sons
-		self.death_sound = pygame.mixer.Sound('gameinfo/audio/death.wav')
-		self.hit_sound = pygame.mixer.Sound('gameinfo/audio/hit.wav')
-		self.attack_sound = pygame.mixer.Sound(monster_info['attack_sound'])
-		self.death_sound.set_volume(0.2)
-		self.hit_sound.set_volume(0.2)
-		self.attack_sound.set_volume(0.2)
-
 		# Stats
 		self.monster_name = monster_name
 		monster_info = monster_data[self.monster_name]
@@ -39,6 +31,16 @@ class Enemy(Entity):
 		self.attack_radius = monster_info['attack_radius']
 		self.notice_radius = monster_info['notice_radius']
 		self.attack_type = monster_info['attack_type']
+
+		# Sons
+		self.death_sound = pygame.mixer.Sound('gameinfo/audio/death.wav')
+		self.hit_sound = pygame.mixer.Sound('gameinfo/audio/hit.wav')
+		self.attack_sound = pygame.mixer.Sound(monster_info['attack_sound'])
+		self.death_sound.set_volume(0.2)
+		self.hit_sound.set_volume(0.2)
+		self.attack_sound.set_volume(0.2)
+
+		
 
 		# Interação com player
 		self.can_attack = True

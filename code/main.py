@@ -11,7 +11,12 @@ class Game:
         pygame.display.set_caption('Jogo')
         self.clock = pygame.time.Clock()
 
-        self.level = Level()
+        self.level = Level() 
+
+        #sound
+        main_sound = pygame.mixer.Sound('gameinfo/audio/main2.wav')
+        main_sound.set_volume(0.4)
+        main_sound.play(loops = -1)
  
     def run(self):
         while True:
