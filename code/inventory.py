@@ -12,8 +12,8 @@ class Inventory:
         self.font = pygame.font.Font(UI_FONT,UI_FONT_SIZE)
 
         # Criação de itens
-        self.height = self.display_surface.get_size()[1] * 0.8
-        self.width = self.display_surface.get_size()[0] // 6
+        self.height = self.display_surface.get_size()[1] * 0.6
+        self.width = self.display_surface.get_size()[0] // 3
         self.create_items()
 
         # Sistema de seleção

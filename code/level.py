@@ -35,7 +35,7 @@ class Level:
 
         # INTERFACE DO USUÁRIO
         self.ui = UI()
-        self.upgrade = Inventory(self.player)
+        self.inventory = Inventory(self.player)
 
         # Particulas
         self.animation_player = AnimationPlayer()
@@ -143,7 +143,7 @@ class Level:
         self.ui.display(self.player)
 
         if self.game_paused:
-            self.upgrade.display()
+            self.inventory.display()
 
         else:
             # update and draw the game
