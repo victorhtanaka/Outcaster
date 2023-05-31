@@ -16,11 +16,11 @@ class Player(Entity):
 
         # Movimento e ataque
         self.attacking = False
-        self.attack_cooldown = 400
+        self.attack_cooldown = 600
         self.attack_time = None
         self.obstacle_sprites = obstacle_sprites
 
-        # Weapon
+        # Arma
         self.create_attack = create_attack
         self.destroy_attack = destroy_attack
         self.weapon_index = 0
@@ -38,6 +38,7 @@ class Player(Entity):
 
         # Stats
         self.stats = {'health': 100, 'energy': 60, 'attack': 10, 'magic': 4, 'speed': 6}
+        self.inventory_data = {'coins': 10,'rock': 2,'diamonds': 3,'gold': 10}
         self.health = self.stats['health'] 
         self.energy = self.stats['energy'] 
         self.exp = 123
@@ -190,6 +191,9 @@ class Player(Entity):
         base_damage = self.stats['magic']
         spell_damage = magic_data[self.magic]['strength']
         return base_damage + spell_damage
+
+    def get_value_by_index(self,index):
+        return list(self.inventory_data.values())[index]
 
     def energy_recovery(self):
         if self.energy < self.stats['energy']:

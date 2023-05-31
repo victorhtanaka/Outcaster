@@ -10,12 +10,16 @@ from ui import UI
 from enemy import Enemy
 from particles import AnimationPlayer
 from magic import MagicPlayer
+from inventory import Inventory
 
 class Level:
     def __init__(self):
         
         # superfície de exibição
         self.display_surface = pygame.display.get_surface()
+
+        # pause
+        self.game_paused = False
         
         # setup de grupo de sprites
         self.visible_sprites = YSortCameraGroup()
@@ -31,6 +35,7 @@ class Level:
 
         # INTERFACE DO USUÁRIO
         self.ui = UI()
+        self.upgrade = Inventory(self.player)
 
         # Particulas
         self.animation_player = AnimationPlayer()
@@ -129,13 +134,22 @@ class Level:
         
         self.animation_player.create_particles(particle_type,pos,self.visible_sprites)
 
+    def toggle_inventory(self):
+
+        self.game_paused = not self.game_paused
+
     def run(self):
-		# update and draw the game
         self.visible_sprites.custom_draw(self.player)
-        self.visible_sprites.update()
-        self.visible_sprites.enemy_update(self.player)
-        self.player_attack_logic()
         self.ui.display(self.player)
+
+        if self.game_paused:
+            self.upgrade.display()
+
+        else:
+            # update and draw the game
+            self.visible_sprites.update()
+            self.visible_sprites.enemy_update(self.player)
+            self.player_attack_logic()
 
 class YSortCameraGroup(pygame.sprite.Group):
     def __init__(self):
