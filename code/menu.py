@@ -7,10 +7,15 @@ class Menu():
         self.mid_w, self.mid_h = WIDTH / 2, HEIGHT / 2
         self.run_display = True
         self.cursor_rect = pygame.Rect(0, 0, 80, 20)
+        self.cursor_rectR = pygame.Rect(0, 0, 80, 20)
         self.offset = - 100
+        self.offsetR = - 175
 
     def draw_cursor(self):
-        self.game.draw_text('|', 15, self.cursor_rect.x, self.cursor_rect.y)
+        self.game.draw_text('>', 15, self.cursor_rect.x, self.cursor_rect.y)
+
+    def draw_cursorR(self):
+        self.game.draw_text('<', 15, self.cursor_rectR.x, self.cursor_rectR.y)
 
     def blit_screen(self):
         self.game.window.blit(self.game.display, (0, 0))
@@ -25,6 +30,7 @@ class MainMenu(Menu):
         self.optionsx, self.optionsy = self.mid_w, self.mid_h + 50
         self.creditsx, self.creditsy = self.mid_w, self.mid_h + 100
         self.cursor_rect.midtop = (self.startx + self.offset, self.starty)
+        self.cursor_rectR.midtop = (self.startx - self.offsetR, self.starty)
 
     def display_menu(self):
         self.run_display = True
@@ -37,29 +43,36 @@ class MainMenu(Menu):
             self.game.draw_text("Options", 20, self.optionsx, self.optionsy)
             self.game.draw_text("Credits", 20, self.creditsx, self.creditsy)
             self.draw_cursor()
+            self.draw_cursorR()
             self.blit_screen()
 
 
     def move_cursor(self):
         if self.game.DOWN_KEY:
             if self.state == 'Start':
-                self.cursor_rect.midtop = (self.optionsx + self.offset, self.optionsy + 7)
+                self.cursor_rect.midtop = (self.optionsx + self.offset, self.optionsy )
+                self.cursor_rectR.midtop = (self.optionsx - self.offsetR, self.optionsy )
                 self.state = 'Options'
             elif self.state == 'Options':
-                self.cursor_rect.midtop = (self.creditsx + self.offset, self.creditsy + 10)
+                self.cursor_rect.midtop = (self.creditsx + self.offset, self.creditsy )
+                self.cursor_rectR.midtop = (self.creditsx - self.offsetR, self.creditsy )
                 self.state = 'Credits'
             elif self.state == 'Credits':
-                self.cursor_rect.midtop = (self.startx + self.offset, self.starty + 10)
+                self.cursor_rect.midtop = (self.startx + self.offset, self.starty )
+                self.cursor_rectR.midtop = (self.startx - self.offsetR, self.starty )
                 self.state = 'Start'
         elif self.game.UP_KEY:
             if self.state == 'Start':
-                self.cursor_rect.midtop = (self.creditsx + self.offset, self.creditsy + 12)
+                self.cursor_rect.midtop = (self.creditsx + self.offset, self.creditsy )
+                self.cursor_rectR.midtop = (self.creditsx - self.offsetR, self.creditsy )
                 self.state = 'Credits'
             elif self.state == 'Options':
-                self.cursor_rect.midtop = (self.startx + self.offset, self.starty + 10)
+                self.cursor_rect.midtop = (self.startx + self.offset, self.starty )
+                self.cursor_rectR.midtop = (self.startx - self.offsetR, self.starty )
                 self.state = 'Start'
             elif self.state == 'Credits':
-                self.cursor_rect.midtop = (self.optionsx + self.offset, self.optionsy + 20)
+                self.cursor_rect.midtop = (self.optionsx + self.offset, self.optionsy )
+                self.cursor_rectR.midtop = (self.optionsx - self.offsetR, self.optionsy )
                 self.state = 'Options'
 
     def check_input(self):
