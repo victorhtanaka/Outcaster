@@ -40,8 +40,6 @@ class Enemy(Entity):
 		self.hit_sound.set_volume(0.2)
 		self.attack_sound.set_volume(0.2)
 
-		
-
 		# Interação com player
 		self.can_attack = True
 		self.attack_time = None
