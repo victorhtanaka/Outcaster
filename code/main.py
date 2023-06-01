@@ -69,7 +69,7 @@ class Game:
         text_rect = text_surface.get_rect()
         text_rect.center = (x,y)
         self.display.blit(text_surface,text_rect)
-
+############################################################################################
     def run(self):
         while True:
             for event in pygame.event.get():
