@@ -35,15 +35,7 @@ class Game:
         self.curr_menu = self.main_menu
 #########################################################
     def game_loop(self):
-        while self.playing:
-            self.check_events()
-            if self.START_KEY:
-                self.playing= False
-            self.display.fill(self.BLACK)
-            self.draw_text('Thanks for Playing', 60, self.DISPLAY_W/2, self.DISPLAY_H/2)
-            self.window.blit(self.display, (0,0))
-            pygame.display.update()
-            self.reset_keys()
+        g.run()
 
     def check_events(self):
         for event in pygame.event.get():
