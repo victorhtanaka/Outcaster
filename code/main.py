@@ -1,7 +1,7 @@
 import pygame, sys
 from settings import *
 from level import Level
-from title import *
+from menu import *
         
 class Game:
     def __init__(self):
@@ -33,7 +33,7 @@ class Game:
         self.options = OptionsMenu(self)
         self.credits = CreditsMenu(self)
         self.curr_menu = self.main_menu
-
+#########################################################
     def game_loop(self):
         while self.playing:
             self.check_events()
@@ -63,8 +63,8 @@ class Game:
     def reset_keys(self):
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY = False, False, False, False
 
-    def draw_text(self, text, size, x, y ):
-        font = pygame.font.Font(self.font_name,size)
+    def draw_text(self, text,size, x, y ):
+        font = pygame.font.Font(UI_FONT,UI_FONT_SIZE)
         text_surface = font.render(text, True, self.WHITE)
         text_rect = text_surface.get_rect()
         text_rect.center = (x,y)
