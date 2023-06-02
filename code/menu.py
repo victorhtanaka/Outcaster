@@ -1,4 +1,4 @@
-import pygame
+import pygame, sys
 from settings import *
 
 class Menu():
@@ -46,6 +46,7 @@ class MainMenu(Menu):
         self.startx, self.starty = self.mid_w, self.mid_h 
         self.optionsx, self.optionsy = self.mid_w, self.mid_h + 50
         self.creditsx, self.creditsy = self.mid_w, self.mid_h + 100
+        self.sairx, self.sairy = self.mid_w, self.mid_h + 150
         
         self.cursor_rect.midtop = (self.startx + self.offset, self.starty)
         self.cursor_rectR.midtop = (self.startx - self.offsetR, self.starty)
@@ -57,9 +58,10 @@ class MainMenu(Menu):
             self.check_input()
             self.game.display.fill(self.game.BLACK)
             self.game.draw_text('OUTCASTER', 20, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 200)
-            self.game.draw_text("Start Game", 20, self.startx, self.starty)
-            self.game.draw_text("Options", 20, self.optionsx, self.optionsy)
-            self.game.draw_text("Credits", 20, self.creditsx, self.creditsy)
+            self.game.draw_text("Começar Jogo", 20, self.startx, self.starty)
+            self.game.draw_text("Opções", 20, self.optionsx, self.optionsy)
+            self.game.draw_text("Créditos", 20, self.creditsx, self.creditsy)
+            self.game.draw_text("Sair", 20, self.sairx, self.sairy)
             self.draw_cursor()
             self.draw_cursorR()
             self.blit_screen()
@@ -76,23 +78,32 @@ class MainMenu(Menu):
                 self.cursor_rectR.midtop = (self.creditsx - self.offsetR, self.creditsy )
                 self.state = 'Credits'
             elif self.state == 'Credits':
+                self.cursor_rect.midtop = (self.sairx + self.offset, self.sairy )
+                self.cursor_rectR.midtop = (self.sairx - self.offsetR, self.sairy )
+                self.state = 'Quit'
+            elif self.state == 'Quit':
                 self.cursor_rect.midtop = (self.startx + self.offset, self.starty )
                 self.cursor_rectR.midtop = (self.startx - self.offsetR, self.starty )
                 self.state = 'Start'
+
         elif self.game.UP_KEY:
             self.cursor_sound()
             if self.state == 'Start':
+                self.cursor_rect.midtop = (self.sairx + self.offset, self.sairy )
+                self.cursor_rectR.midtop = (self.sairx - self.offsetR, self.sairy )
+                self.state = 'Quit'
+            elif self.state == 'Quit':
                 self.cursor_rect.midtop = (self.creditsx + self.offset, self.creditsy )
                 self.cursor_rectR.midtop = (self.creditsx - self.offsetR, self.creditsy )
                 self.state = 'Credits'
-            elif self.state == 'Options':
-                self.cursor_rect.midtop = (self.startx + self.offset, self.starty )
-                self.cursor_rectR.midtop = (self.startx - self.offsetR, self.starty )
-                self.state = 'Start'
             elif self.state == 'Credits':
                 self.cursor_rect.midtop = (self.optionsx + self.offset, self.optionsy )
                 self.cursor_rectR.midtop = (self.optionsx - self.offsetR, self.optionsy )
                 self.state = 'Options'
+            elif self.state == 'Options':
+                self.cursor_rect.midtop = (self.startx + self.offset, self.starty )
+                self.cursor_rectR.midtop = (self.startx - self.offsetR, self.starty )
+                self.state = 'Start'
 
     def check_input(self):
         self.move_cursor()
@@ -104,7 +115,11 @@ class MainMenu(Menu):
                 self.game.curr_menu = self.game.options
             elif self.state == 'Credits':
                 self.game.curr_menu = self.game.credits
-            self.run_display = False
+            elif self.state == 'Quit':
+                self.run_display = False
+                # fazer verificador para perguntar se o jogador deseja mesmo sair do jogo
+                pygame.quit()
+                sys.exit()
 
 class OptionsMenu(Menu):
     def __init__(self, game):
