@@ -46,7 +46,7 @@ weapon_data = {
 
 # Mágica
 magic_data = {
-    'flame': {'strength': 5,'cost': 20,'graphic':'gameinfo/graphics/particles/flame/fire.png'},
+    'flame': {'strength': 12,'cost': 20,'graphic':'gameinfo/graphics/particles/flame/fire.png'},
     'heal': {'strength': 20,'cost': 20,'graphic':'gameinfo/graphics/particles/heal/heal.png'}}
 
 # Inimigo

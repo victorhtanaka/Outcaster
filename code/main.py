@@ -35,10 +35,6 @@ class Game:
     def game_loop(self):
         while self.playing:
             g.run()
-<<<<<<< HEAD
-
-=======
->>>>>>> 013cabb3a0a88eae823a3b6223e113027d610398
 
     def check_events(self):
         for event in pygame.event.get():
