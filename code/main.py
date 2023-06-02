@@ -25,6 +25,7 @@ class Game:
         self.DISPLAY_W, self.DISPLAY_H = 1280, 720
         self.display = pygame.Surface((self.DISPLAY_W,self.DISPLAY_H))
         self.window = pygame.display.set_mode(((self.DISPLAY_W,self.DISPLAY_H)))
+        self.menu_bg = pygame.image.load('gameinfo/graphics/cursor/menu_bg.png')
         self.font_name = ('gameinfo/graphics/font/m5x7.ttf')
         self.BLACK, self.WHITE = (0, 0, 0), (255, 255, 255)
         self.main_menu = MainMenu(self)
@@ -60,6 +61,18 @@ class Game:
         text_rect = text_surface.get_rect()
         text_rect.center = (x,y)
         self.display.blit(text_surface,text_rect)
+    
+    def draw_icon(self,x,y):
+        icon_surface = pygame.image.load('gameinfo/graphics/cursor/sword_ico_l.png')
+        icon_rect = icon_surface.get_rect()
+        icon_rect.center = (x,y)
+        self.display.blit(icon_surface, icon_rect)
+
+    def draw_iconR(self,x,y):
+        icon_surface = pygame.image.load('gameinfo/graphics/cursor/sword_ico_r.png')
+        icon_rect = icon_surface.get_rect()
+        icon_rect.center = (x,y)
+        self.display.blit(icon_surface, icon_rect)
 
     def run(self):
         #sound

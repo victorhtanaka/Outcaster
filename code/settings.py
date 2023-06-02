@@ -1,3 +1,4 @@
+import pygame
 # setup
 WIDTH    = 1280
 HEIGHT   = 720
@@ -9,13 +10,6 @@ HITBOX_OFFSET = {
     'grass': -10,
     'invisible': 0
 }
-
-# Carregar imagem do cursos
-#new_cursor = pygame.image.load("")
-#new_cursor = pygame.transform.scale
-
-#Esconder cursor do mouse
-#pygame.mouse.set_visible(False)
 
 #UI
 BAR_HEIGHT = 20
