@@ -116,10 +116,10 @@ class MainMenu(Menu):
             elif self.state == 'Credits':
                 self.game.curr_menu = self.game.credits
             elif self.state == 'Quit':
-                self.run_display = False
                 # fazer verificador para perguntar se o jogador deseja mesmo sair do jogo
                 pygame.quit()
                 sys.exit()
+            self.run_display = False
 
 class OptionsMenu(Menu):
     def __init__(self, game):
