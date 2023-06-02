@@ -26,6 +26,7 @@ class Game:
         self.DISPLAY_W, self.DISPLAY_H = 1280, 720
         self.display = pygame.Surface((self.DISPLAY_W,self.DISPLAY_H))
         self.window = pygame.display.set_mode(((self.DISPLAY_W,self.DISPLAY_H)))
+        self.menu_bg = pygame.image.load('gameinfo/graphics/cursor/menu_bg.png')
         self.font_name = ('gameinfo/graphics/font/m5x7.ttf')
         self.BLACK, self.WHITE = (0, 0, 0), (255, 255, 255)
         self.main_menu = MainMenu(self)
@@ -40,8 +41,8 @@ class Game:
     def check_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self.running, self.playing = False, False
-                self.curr_menu.run_display = False
+                pygame.quit()
+                sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     self.START_KEY = True
@@ -61,6 +62,18 @@ class Game:
         text_rect = text_surface.get_rect()
         text_rect.center = (x,y)
         self.display.blit(text_surface,text_rect)
+    
+    def draw_icon(self,x,y):
+        icon_surface = pygame.image.load('gameinfo/graphics/cursor/sword_ico_l.png')
+        icon_rect = icon_surface.get_rect()
+        icon_rect.center = (x,y)
+        self.display.blit(icon_surface, icon_rect)
+
+    def draw_iconR(self,x,y):
+        icon_surface = pygame.image.load('gameinfo/graphics/cursor/sword_ico_r.png')
+        icon_rect = icon_surface.get_rect()
+        icon_rect.center = (x,y)
+        self.display.blit(icon_surface, icon_rect)
 
     def run(self):
         while True:
