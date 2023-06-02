@@ -146,6 +146,7 @@ class CreditsMenu(Menu):
                 self.game.curr_menu = self.game.main_menu
                 self.run_display = False
             self.game.display.fill(self.game.BLACK)
-            self.game.draw_text('Credits', 20, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 20)
-            self.game.draw_text('Made by me', 15, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 + 10)
+            self.game.draw_text('Créditos', 20, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 200)
+            self.game.draw_text('Design de Interface:', 15, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 120)
+            self.game.draw_text('Yan Ferreira', 15, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 50)
             self.blit_screen()
