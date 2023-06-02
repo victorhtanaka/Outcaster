@@ -56,7 +56,7 @@ class MainMenu(Menu):
             self.game.check_events()
             self.check_input()
             self.game.display.fill(self.game.BLACK)
-            self.game.draw_text('Main Menu', 20, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 200)
+            self.game.draw_text('OUTCASTER', 20, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 200)
             self.game.draw_text("Start Game", 20, self.startx, self.starty)
             self.game.draw_text("Options", 20, self.optionsx, self.optionsy)
             self.game.draw_text("Credits", 20, self.creditsx, self.creditsy)
@@ -138,12 +138,12 @@ class OptionsMenu(Menu):
             self.game.draw_text(f"{self.music} {self.ast_m}", 15, self.volx, self.voly + 85)
             self.game.draw_text("SFX", 15, self.sfx_volx, self.sfx_voly)
             self.game.draw_text(f"{self.sfx} {self.ast_s}", 15, self.volx, self.voly + 185)
-            self.game.draw_text("Controles", 15, self.controlsx, self.controlsy)
+            self.game.draw_text('Controles', 15, self.controlsx, self.controlsy)
             self.draw_cursor()
             self.draw_cursorR()
             self.blit_screen()
 
-    def check_input(self):
+    def move_cursor(self):
         if self.game.DOWN_KEY:
             self.cursor_sound()
             if self.state == 'Música':
@@ -190,6 +190,15 @@ class OptionsMenu(Menu):
             elif self.state == 'SFX':
                 if self.sfx != 10:
                     self.sfx += 1
+    
+    def check_input(self):
+        self.move_cursor()
+        if self.game.START_KEY:
+            self.enter_sound()
+            if self.state == 'Controls':
+                self.game.curr_menu = self.game.controls
+            self.run_display = False
+
             
 class CreditsMenu(Menu):
     def __init__(self, game):
@@ -207,4 +216,20 @@ class CreditsMenu(Menu):
             self.game.draw_text('Créditos', 20, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 200)
             self.game.draw_text('Design de Interface:', 15, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 120)
             self.game.draw_text('Yan Ferreira', 15, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 50)
+            self.blit_screen()
+
+
+class ControlsMenu(Menu):
+    def __init__(self, game):
+        Menu.__init__(self, game)
+
+    def display_menu(self):
+        self.run_display = True
+        while self.run_display:
+            self.game.check_events()
+            if self.game.BACK_KEY:
+                self.enter_sound()
+                self.game.curr_menu = self.game.options_menu
+                self.run_display = False
+
             self.blit_screen()

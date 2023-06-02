@@ -2,7 +2,7 @@ import pygame, sys
 from settings import *
 from level import Level
 from menu import *
-        
+     
 class Game:
     def __init__(self):
         
@@ -13,10 +13,9 @@ class Game:
         self.clock = pygame.time.Clock()
 
         self.level = Level() 
-
         self.running, self.playing = True, False
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY, self.LEFT_KEY, self.RIGHT_KEY = False, False, False, False, False, False
-        self.DISPLAY_W, self.DISPLAY_H = 1280, 720
+        self.DISPLAY_W, self.DISPLAY_H = 1920, 1080
         self.display = pygame.Surface((self.DISPLAY_W,self.DISPLAY_H))
         self.window = pygame.display.set_mode(((self.DISPLAY_W,self.DISPLAY_H)))
         self.menu_bg = pygame.image.load('gameinfo/graphics/cursor/menu_bg.png')
@@ -25,6 +24,7 @@ class Game:
         self.main_menu = MainMenu(self)
         self.options = OptionsMenu(self)
         self.credits = CreditsMenu(self)
+        self.controls = ControlsMenu(self)
         self.curr_menu = self.main_menu
 
     def game_loop(self):
