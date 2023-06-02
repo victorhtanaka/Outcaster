@@ -9,7 +9,7 @@ class Menu():
         self.cursor_rect = pygame.Rect(0, 0, 80, 20)
         self.cursor_rectR = pygame.Rect(0, 0, 80, 20)
         self.offset = - 100
-        self.offsetR = - 175
+        self.offsetR = - 170
 
         self.music = 5
         self.sfx = 10
@@ -58,7 +58,7 @@ class MainMenu(Menu):
             self.check_input()
             self.game.display.fill(self.game.BLACK)
             self.game.draw_text('OUTCASTER', 20, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 200)
-            self.game.draw_text("Começar Jogo", 20, self.startx, self.starty)
+            self.game.draw_text("Começar", 20, self.startx, self.starty)
             self.game.draw_text("Opções", 20, self.optionsx, self.optionsy)
             self.game.draw_text("Créditos", 20, self.creditsx, self.creditsy)
             self.game.draw_text("Sair", 20, self.sairx, self.sairy)
