@@ -14,12 +14,11 @@ class Game:
 
         self.level = Level() 
 
-        #sound
-        main_sound = pygame.mixer.Sound('gameinfo/audio/main2.wav')
+        # Menu music
         title_sound = pygame.mixer.Sound('gameinfo/audio/fallen.wav')
         title_sound.set_volume(0.2)
-        main_sound.set_volume(0.4)
-        main_sound.play(loops = -1)
+        title_sound.play(loops = -1)
+
 
         self.running, self.playing = True, False
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY = False, False, False, False
@@ -35,13 +34,15 @@ class Game:
         self.curr_menu = self.main_menu
 #########################################################
     def game_loop(self):
-        g.run()
+        while self.playing:
+            g.run()
+
 
     def check_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self.running, self.playing = False, False
-                self.curr_menu.run_display = False
+                pygame.quit()
+                sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     self.START_KEY = True
@@ -63,16 +64,24 @@ class Game:
         self.display.blit(text_surface,text_rect)
 ############################################################################################
     def run(self):
+        #sound
+        title_sound = pygame.mixer.Sound('gameinfo/audio/fallen.wav')
+        title_sound.set_volume(0.2)
+        pygame.mixer.stop()
+        main_sound = pygame.mixer.Sound('gameinfo/audio/main2.wav')
+        main_sound.set_volume(0.4)
+        main_sound.play(loops = -1)
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_i:
+                    if event.key == pygame.K_ESCAPE:
                         self.level.toggle_inventory()
 
             self.screen.fill(WATER_COLOR)
+            
             self.level.run()        
             pygame.display.update()
             self.clock.tick(FPS)
