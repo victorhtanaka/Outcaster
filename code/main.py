@@ -14,14 +14,8 @@ class Game:
 
         self.level = Level() 
 
-        # Menu music
-        title_sound = pygame.mixer.Sound('gameinfo/audio/fallen.wav')
-        title_sound.set_volume(0.2)
-        title_sound.play(loops = -1)
-
-
         self.running, self.playing = True, False
-        self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY = False, False, False, False
+        self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY, self.LEFT_KEY, self.RIGHT_KEY = False, False, False, False, False, False
         self.DISPLAY_W, self.DISPLAY_H = 1280, 720
         self.display = pygame.Surface((self.DISPLAY_W,self.DISPLAY_H))
         self.window = pygame.display.set_mode(((self.DISPLAY_W,self.DISPLAY_H)))
@@ -51,9 +45,13 @@ class Game:
                     self.DOWN_KEY = True
                 if event.key == pygame.K_UP:
                     self.UP_KEY = True
+                if event.key == pygame.K_LEFT:
+                    self.LEFT_KEY = True
+                if event.key == pygame.K_RIGHT:
+                    self.RIGHT_KEY = True
 
     def reset_keys(self):
-        self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY = False, False, False, False
+        self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY, self.LEFT_KEY, self.RIGHT_KEY = False, False, False, False, False, False
 
     def draw_text(self, text,size, x, y ):
         font = pygame.font.Font(UI_FONT,UI_FONT_SIZE)
@@ -75,13 +73,7 @@ class Game:
         self.display.blit(icon_surface, icon_rect)
 
     def run(self):
-        #sound
-        title_sound = pygame.mixer.Sound('gameinfo/audio/fallen.wav')
-        title_sound.set_volume(0.2)
-        pygame.mixer.stop()
-        main_sound = pygame.mixer.Sound('gameinfo/audio/main2.wav')
-        main_sound.set_volume(0.4)
-        main_sound.play(loops = -1)
+        
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
