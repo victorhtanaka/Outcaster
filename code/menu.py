@@ -145,18 +145,18 @@ class OptionsMenu(Menu):
                 self.enter_sound()
                 self.game.curr_menu = self.game.main_menu
                 self.run_display = False
-            self.ast_m = "*" * (self.music)
-            self.ast_s = "*" * (self.sfx)
+            self.ast_m = "*" * (int(self.music))
+            self.ast_s = "*" * (int(self.sfx))
             self.game.check_events()
             self.check_input()
             self.game.display.fill((0, 0, 0))
-            self.game.draw_text('Opções', 20, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 200)
-            self.game.draw_text("Volume", 15, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 100)
-            self.game.draw_text("Música", 15, self.music_volx, self.music_voly)
-            self.game.draw_text(f"{self.music} {self.ast_m}", 15, self.volx, self.voly + 85)
-            self.game.draw_text("SFX", 15, self.sfx_volx, self.sfx_voly)
-            self.game.draw_text(f"{self.sfx} {self.ast_s}", 15, self.volx, self.voly + 185)
-            self.game.draw_text('Controles', 15, self.controlsx, self.controlsy)
+            self.game.draw_text('Opções', 45, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 200)
+            self.game.draw_text("Volume", 45, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 100)
+            self.game.draw_text("Música", 35, self.music_volx, self.music_voly)
+            self.game.draw_text(f"{self.music} {self.ast_m}", 30, self.volx, self.voly + 85)
+            self.game.draw_text("SFX", 35, self.sfx_volx, self.sfx_voly)
+            self.game.draw_text(f"{self.sfx} {self.ast_s}", 30, self.volx, self.voly + 185)
+            self.game.draw_text('Controles', 35, self.controlsx, self.controlsy)
             self.draw_cursor()
             self.draw_cursorR()
             self.blit_screen()
@@ -231,9 +231,9 @@ class CreditsMenu(Menu):
                 self.game.curr_menu = self.game.main_menu
                 self.run_display = False
             self.game.display.fill(self.game.BLACK)
-            self.game.draw_text('Créditos', 20, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 200)
-            self.game.draw_text('Design de Interface:', 15, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 120)
-            self.game.draw_text('Yan Ferreira', 15, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 50)
+            self.game.draw_text('Créditos', 40, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 200)
+            self.game.draw_text('Design de Interface:', 40, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 120)
+            self.game.draw_text('Yan Ferreira', 35, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 50)
             self.blit_screen()
 
 
