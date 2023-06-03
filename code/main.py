@@ -71,6 +71,12 @@ class Game:
         icon_rect = icon_surface.get_rect()
         icon_rect.center = (x,y)
         self.display.blit(icon_surface, icon_rect)
+    
+    def menu_logo(self,x,y):
+        logo_surface = pygame.image.load('gameinfo/graphics/logo/menu_logo.png')
+        logo_rect = logo_surface.get_rect()
+        logo_rect.center = (x,y)
+        self.display.blit(logo_surface, logo_rect)
 
     def run(self):
         

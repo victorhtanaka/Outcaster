@@ -10,7 +10,6 @@ class Menu():
         self.cursor_rectR = pygame.Rect(0, 0, 80, 20)
         self.offset = - 100
         self.offsetR = - 170
-
         self.music = 0.1
         self.sfx = 2
 
@@ -29,6 +28,9 @@ class Menu():
 
     def draw_cursorR(self):
         self.game.draw_iconR(self.cursor_rectR.x, self.cursor_rectR.y + 5)
+
+    def draw_logo(self):
+        self.game.menu_logo(self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 200)
 
     def blit_screen(self):
         self.game.window.blit(self.game.display, (0, 0))
@@ -57,13 +59,13 @@ class MainMenu(Menu):
             self.game.check_events()
             self.check_input()
             self.game.display.fill(self.game.BLACK)
-            self.game.draw_text('OUTCASTER', 20, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 200)
             self.game.draw_text("Começar", 20, self.startx, self.starty)
             self.game.draw_text("Opções", 20, self.optionsx, self.optionsy)
             self.game.draw_text("Créditos", 20, self.creditsx, self.creditsy)
             self.game.draw_text("Sair", 20, self.sairx, self.sairy)
             self.draw_cursor()
             self.draw_cursorR()
+            self.draw_logo()
             self.blit_screen()
 
     def move_cursor(self):
