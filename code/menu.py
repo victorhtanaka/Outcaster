@@ -10,7 +10,7 @@ class Menu():
         self.cursor_rectR = pygame.Rect(0, 0, 80, 20)
         self.offset = - 50
         self.offsetR = - 120
-        self.music = 0.1
+        self.music = 0.5
         self.sfx = 2
 
     def cursor_sound(self):
