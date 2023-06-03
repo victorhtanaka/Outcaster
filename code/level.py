@@ -11,6 +11,7 @@ from enemy import Enemy
 from particles import AnimationPlayer
 from magic import MagicPlayer
 from inventory import Inventory
+from escape_menu import EscapeMenu
 
 class Level:
     def __init__(self):
@@ -18,8 +19,9 @@ class Level:
         # superfície de exibição
         self.display_surface = pygame.display.get_surface()
 
-        # pause
-        self.game_paused = False
+        # Inventario e Menu Pause
+        self.inventory_open = False
+        self.menu_open = False
 
         # titulo
         self.title_ver = True
@@ -40,6 +42,7 @@ class Level:
         # INTERFACE DO USUÁRIO
         self.ui = UI()
         self.inventory = Inventory(self.player)
+        self.escape_menu = EscapeMenu(self.player)
 
         # Particulas
         self.animation_player = AnimationPlayer()
@@ -165,15 +168,21 @@ class Level:
 
     def toggle_inventory(self):
 
-        self.game_paused = not self.game_paused
+        self.inventory_open = not self.inventory_open
+
+    def toggle_menu(self):
+
+        self.menu_open = not self.menu_open
 
     def run(self):
         self.visible_sprites.custom_draw(self.player)
         self.ui.display(self.player)
 
-        if self.game_paused:
+        #Para de atualizar o jogo se inventario ou menu abertos
+        if self.inventory_open:
             self.inventory.display()
-
+        elif self.menu_open:
+            self.escape_menu.display()
         else:
             # update and draw the game
             self.visible_sprites.update()
