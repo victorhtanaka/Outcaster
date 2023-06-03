@@ -8,8 +8,8 @@ class Menu():
         self.run_display = True
         self.cursor_rect = pygame.Rect(0, 0, 80, 20)
         self.cursor_rectR = pygame.Rect(0, 0, 80, 20)
-        self.offset = - 100
-        self.offsetR = - 170
+        self.offset = - 50
+        self.offsetR = - 120
         self.music = 0.1
         self.sfx = 2
 
@@ -59,10 +59,11 @@ class MainMenu(Menu):
             self.game.check_events()
             self.check_input()
             self.game.display.fill(self.game.BLACK)
-            self.game.draw_text("Começar", 20, self.startx, self.starty)
-            self.game.draw_text("Opções", 20, self.optionsx, self.optionsy)
-            self.game.draw_text("Créditos", 20, self.creditsx, self.creditsy)
-            self.game.draw_text("Sair", 20, self.sairx, self.sairy)
+            self.game.draw_text("Começar", 35, self.startx, self.starty)
+            self.game.draw_text("Opções", 35, self.optionsx, self.optionsy)
+            self.game.draw_text("Créditos", 35, self.creditsx, self.creditsy)
+            self.game.draw_text("Sair", 35, self.sairx, self.sairy)
+            self.game.draw_text("0.1.2", 40, self.game.DISPLAY_W / 2 - 700, self.game.DISPLAY_H - 160)
             self.draw_cursor()
             self.draw_cursorR()
             self.draw_logo()
