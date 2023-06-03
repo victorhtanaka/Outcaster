@@ -11,12 +11,8 @@ class Menu():
         self.offset = - 100
         self.offsetR = - 170
 
-        self.music = 5
-        self.sfx = 10
-
-        self.title_sound = pygame.mixer.Sound('gameinfo/audio/fallen.wav')
-        self.title_sound.set_volume(self.music // 10)
-        self.title_sound.play(loops = -1)
+        self.music = 0.1
+        self.sfx = 2
 
     def cursor_sound(self):
         self.cursor_s = pygame.mixer.Sound('gameinfo/audio/cursor_sound.wav')
@@ -47,6 +43,10 @@ class MainMenu(Menu):
         self.optionsx, self.optionsy = self.mid_w, self.mid_h + 50
         self.creditsx, self.creditsy = self.mid_w, self.mid_h + 100
         self.sairx, self.sairy = self.mid_w, self.mid_h + 150
+
+        self.title_sound = pygame.mixer.Sound('gameinfo/audio/fallen.wav')
+        self.title_sound.set_volume(self.music)
+        self.title_sound.play(loops = -1)
         
         self.cursor_rect.midtop = (self.startx + self.offset, self.starty)
         self.cursor_rectR.midtop = (self.startx - self.offsetR, self.starty)
