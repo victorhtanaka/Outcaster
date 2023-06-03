@@ -167,7 +167,7 @@ class Player(Entity):
         animation = self.animations[self.status]
 
         # Loopar no frame index
-        self.frame_index += self.animation_speed
+        self.frame_index += self.animation_speed + 0.05
         if self.frame_index >= len(animation):
             self.frame_index = 0
 
