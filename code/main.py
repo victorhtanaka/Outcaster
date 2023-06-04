@@ -2,6 +2,7 @@ import pygame, sys
 from settings import *
 from level import Level
 from menu import *
+from pvidplayer import Video
      
 class Game:
     def __init__(self):
@@ -19,12 +20,19 @@ class Game:
         self.display = pygame.Surface((self.DISPLAY_W,self.DISPLAY_H))
         self.window = pygame.display.set_mode(((self.DISPLAY_W,self.DISPLAY_H)))
         self.font_name = ('gameinfo/graphics/font/m5x7.ttf')
-        self.BLUE, self.WHITE = (20,170,245), (255, 255, 255)
+        self.BLACK, self.WHITE = (20,170,245), (255, 255, 255)
         self.main_menu = MainMenu(self)
         self.options = OptionsMenu(self)
         self.credits = CreditsMenu(self)
         self.controls = ControlsMenu(self)
         self.curr_menu = self.main_menu
+
+    def intro(self):
+        self.vid = Video('gameinfo/graphics/logo/videoplayback.mp4')
+        self.vid.set_size((1920,1080))
+        while True:
+            self.vid.draw(self.screen,(0,0))
+            pygame.display.update()
 
     def game_loop(self):
         while self.playing:
@@ -52,6 +60,7 @@ class Game:
     def reset_keys(self):
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY, self.LEFT_KEY, self.RIGHT_KEY = False, False, False, False, False, False
 
+################ DA PRA OTIMIZAR ESSA PARTE #################
     def draw_text(self, text,size, x, y ):
         font = pygame.font.Font(UI_FONT,size)
         text_surface = font.render(text, True, self.WHITE)
@@ -76,10 +85,18 @@ class Game:
         logo_rect = logo_surface.get_rect()
         logo_rect.center = (x,y)
         self.display.blit(logo_surface, logo_rect)
+################################################################
 
     def menu_bg(self):
         menu_bg = pygame.image.load('gameinfo/graphics/cursor/menu_bg.png')
         self.display.blit(menu_bg, (400,0))
+
+    #def intro(self):
+    #    self.vid = Video('gameinfo/graphics/logo/videoplayback.mp4')
+    #    self.vid.set_size((1920,1080))
+    #    while True:
+    #        self.vid.draw(self.screen,(0,0))
+
 
     def run(self):
         
