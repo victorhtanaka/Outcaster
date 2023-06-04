@@ -18,9 +18,8 @@ class Game:
         self.DISPLAY_W, self.DISPLAY_H = 1920, 1080
         self.display = pygame.Surface((self.DISPLAY_W,self.DISPLAY_H))
         self.window = pygame.display.set_mode(((self.DISPLAY_W,self.DISPLAY_H)))
-        self.menu_bg = pygame.image.load('gameinfo/graphics/cursor/menu_bg.png')
         self.font_name = ('gameinfo/graphics/font/m5x7.ttf')
-        self.BLACK, self.WHITE = (0, 0, 0), (255, 255, 255)
+        self.BLUE, self.WHITE = (20,170,245), (255, 255, 255)
         self.main_menu = MainMenu(self)
         self.options = OptionsMenu(self)
         self.credits = CreditsMenu(self)
@@ -77,6 +76,10 @@ class Game:
         logo_rect = logo_surface.get_rect()
         logo_rect.center = (x,y)
         self.display.blit(logo_surface, logo_rect)
+
+    def menu_bg(self):
+        menu_bg = pygame.image.load('gameinfo/graphics/cursor/menu_bg.png')
+        self.display.blit(menu_bg, (400,0))
 
     def run(self):
         

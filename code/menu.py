@@ -59,6 +59,7 @@ class MainMenu(Menu):
             self.game.check_events()
             self.check_input()
             self.game.display.fill(self.game.BLACK)
+            #self.game.menu_bg()
             self.game.draw_text("Começar", 35, self.startx, self.starty)
             self.game.draw_text("Opções", 35, self.optionsx, self.optionsy)
             self.game.draw_text("Créditos", 35, self.creditsx, self.creditsy)
