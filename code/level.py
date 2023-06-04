@@ -26,7 +26,6 @@ class Level:
         # titulo
         self.title_ver = True
 
-
         # setup de grupo de sprites
         self.visible_sprites = YSortCameraGroup()
         self.obstacle_sprites = pygame.sprite.Group()
@@ -125,7 +124,7 @@ class Level:
 
     def create_attack(self):
 
-        self.current_attack = Weapon(self.player, [self.visible_sprites,self.attack_sprites])
+        self.current_attack = Weapon(self.player, [self.attack_sprites])
 
     def create_magic(self,style,strength,cost):
         if style == 'heal':
