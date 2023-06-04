@@ -30,10 +30,10 @@ class Menu():
         self.game.draw_iconR(self.cursor_rectR.x, self.cursor_rectR.y + 5)
 
     def draw_logo(self):
-        self.game.menu_logo(self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 200)
+        self.game.menu_logo(WIDTH / 2, HEIGHT / 2 - 200)
 
     def blit_screen(self):
-        self.game.window.blit(self.game.display, (0, 0))
+        self.game.screen.blit(self.game.display, (0, 0))
         pygame.display.update()
         self.game.reset_keys()
 
@@ -46,7 +46,7 @@ class MainMenu(Menu):
         self.creditsx, self.creditsy = self.mid_w, self.mid_h + 100
         self.sairx, self.sairy = self.mid_w, self.mid_h + 150
 
-        self.title_sound = pygame.mixer.Sound('gameinfo/audio/fallen.wav')
+        self.title_sound = pygame.mixer.Sound('gameinfo/audio/inferno.wav')
         self.title_sound.set_volume(self.music)
         self.title_sound.play(loops = -1)
         
@@ -65,7 +65,7 @@ class MainMenu(Menu):
             self.game.draw_text("Opções", 35, self.optionsx, self.optionsy)
             self.game.draw_text("Créditos", 35, self.creditsx, self.creditsy)
             self.game.draw_text("Sair", 35, self.sairx, self.sairy)
-            self.game.draw_text("0.1.2", 40, self.game.DISPLAY_W / 2 - 700, self.game.DISPLAY_H - 160)
+            self.game.draw_text("0.1.2", 40, WIDTH / 2 - 700, HEIGHT - 160)
             self.draw_cursor()
             self.draw_cursorR()
             self.draw_logo()
@@ -152,8 +152,8 @@ class OptionsMenu(Menu):
             self.game.check_events()
             self.check_input()
             self.game.display.fill(self.game.BLACK)
-            self.game.draw_text('Opções', 45, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 200)
-            self.game.draw_text("Volume", 45, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 100)
+            self.game.draw_text('Opções', 45, WIDTH / 2, HEIGHT / 2 - 200)
+            self.game.draw_text("Volume", 45, WIDTH / 2, HEIGHT / 2 - 100)
             self.game.draw_text("Música", 35, self.music_volx, self.music_voly)
             self.game.draw_text(f"{self.music} {self.ast_m}", 30, self.volx, self.voly + 85)
             self.game.draw_text("SFX", 35, self.sfx_volx, self.sfx_voly)
@@ -233,9 +233,9 @@ class CreditsMenu(Menu):
                 self.game.curr_menu = self.game.main_menu
                 self.run_display = False
             self.game.display.fill(self.game.BLACK)
-            self.game.draw_text('Créditos', 40, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 200)
-            self.game.draw_text('Design de Interface:', 40, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 120)
-            self.game.draw_text('Yan Ferreira', 35, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 50)
+            self.game.draw_text('Créditos', 40, WIDTH / 2, HEIGHT / 2 - 200)
+            self.game.draw_text('Design de Interface:', 40, WIDTH / 2, HEIGHT / 2 - 120)
+            self.game.draw_text('Yan Ferreira', 35, WIDTH / 2, HEIGHT / 2 - 50)
             self.blit_screen()
 
 

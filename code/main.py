@@ -9,16 +9,14 @@ class Game:
     
         #setup geral
         pygame.init()
-        self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
+        self.screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
         pygame.display.set_caption('Jogo')
         self.clock = pygame.time.Clock()
 
         self.level = Level() 
         self.running, self.playing = True, False
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY, self.LEFT_KEY, self.RIGHT_KEY = False, False, False, False, False, False
-        self.DISPLAY_W, self.DISPLAY_H = 1920, 1080
-        self.display = pygame.Surface((self.DISPLAY_W,self.DISPLAY_H))
-        self.window = pygame.display.set_mode(((self.DISPLAY_W,self.DISPLAY_H)))
+        self.display = pygame.Surface((WIDTH,HEIGHT))
         self.font_name = ('gameinfo/graphics/font/m5x7.ttf')
         self.BLACK, self.WHITE = (20,170,245), (255, 255, 255)
         self.main_menu = MainMenu(self)
@@ -26,13 +24,6 @@ class Game:
         self.credits = CreditsMenu(self)
         self.controls = ControlsMenu(self)
         self.curr_menu = self.main_menu
-
-    def intro(self):
-        self.vid = Video('gameinfo/graphics/logo/videoplayback.mp4')
-        self.vid.set_size((1920,1080))
-        while True:
-            self.vid.draw(self.screen,(0,0))
-            pygame.display.update()
 
     def game_loop(self):
         while self.playing:
