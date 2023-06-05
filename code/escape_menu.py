@@ -11,23 +11,35 @@ class EscapeMenu:
         self.music = 0.5
         self.sfx = 2
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY, self.LEFT_KEY, self.RIGHT_KEY = False, False, False, False, False, False
-        self.startx, self.starty = WIDTH / 2, HEIGHT / 2 + 50
-        self.optionsx, self.optionsy = WIDTH / 2, HEIGHT / 2 + 100
-        self.creditsx, self.creditsy = WIDTH / 2, HEIGHT / 2 + 150
-        self.sairx, self.sairy = WIDTH / 2, HEIGHT / 2 + 200
-
-        self.title_sound = pygame.mixer.Sound('gameinfo/audio/inferno.wav')
-        self.title_sound.set_volume(self.music)
-        self.title_sound.play(loops = -1)
+        self.startx, self.starty = WIDTH / 2, HEIGHT / 2
+        self.optionsx, self.optionsy = WIDTH / 2, HEIGHT / 2 + 50
+        self.creditsx, self.creditsy = WIDTH / 2, HEIGHT / 2 + 100
+        self.sairx, self.sairy = WIDTH / 2, HEIGHT / 2 + 150
         
         self.cursor_rect = pygame.Rect(0, 0, 80, 20)
         self.cursor_rectR = pygame.Rect(0, 0, 80, 20)
         self.cursor_rect.midtop = (self.startx + self.offset, self.starty)
         self.cursor_rectR.midtop = (self.startx - self.offsetR, self.starty)
+
+    
+    def display_esc(self):
+        self.run_display = True
+        while self.run_display:
+            self.check_events()
+            self.check_input()
+            self.draw_text("Começar", 35, self.startx, self.starty)
+            self.draw_text("Opções", 35, self.optionsx, self.optionsy)
+            self.draw_text("Créditos", 35, self.creditsx, self.creditsy)
+            self.draw_text("Sair", 35, self.sairx, self.sairy)
+            self.draw_text("0.1.2", 40, WIDTH / 2 - 700, HEIGHT - 160)
+            self.draw_cursor()
+            self.draw_cursorR()
+            self.blit_screen()
+            self.esc_background()
     
     def draw_text(self, text,size, x, y ):
         font = pygame.font.Font(UI_FONT,size)
-        text_surface = font.render(text, True, 'black')
+        text_surface = font.render(text, True, 'white')
         text_rect = text_surface.get_rect()
         text_rect.center = (x,y)
         self.display.blit(text_surface,text_rect)
@@ -53,6 +65,11 @@ class EscapeMenu:
         icon_rect = icon_surface.get_rect()
         icon_rect.center = (x,y)
         self.display.blit(icon_surface, icon_rect)
+
+    def esc_background(self):
+        self.esc_surface = pygame.image.load('gameinfo/graphics/logo/background.png').convert_alpha()
+        self.esc_rect = self.esc_surface.get_rect()
+        self.display.blit(self.esc_surface, (0,0))
         
     def draw_cursor(self):
         self.draw_icon(self.cursor_rect.x, self.cursor_rect.y + 5)
@@ -86,20 +103,6 @@ class EscapeMenu:
     
     def reset_keys(self):
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY, self.LEFT_KEY, self.RIGHT_KEY = False, False, False, False, False, False
-
-    def display_esc(self):
-        self.run_display = True
-        while self.run_display:
-            self.check_events()
-            self.check_input()
-            self.draw_text("Começar", 35, self.startx, self.starty)
-            self.draw_text("Opções", 35, self.optionsx, self.optionsy)
-            self.draw_text("Créditos", 35, self.creditsx, self.creditsy)
-            self.draw_text("Sair", 35, self.sairx, self.sairy)
-            self.draw_text("0.1.2", 40, WIDTH / 2 - 700, HEIGHT - 160)
-            self.draw_cursor()
-            self.draw_cursorR()
-            self.blit_screen()
 
     def move_cursor(self):
         if self.DOWN_KEY:
