@@ -1,4 +1,3 @@
 # CHGAME
-hello guys
-today were going to show you how to download photoshop for free
-banana meteoro cow
+jogo foda
+heelo guis today weare goingy to chow yu how to download phootoshop for free updated
