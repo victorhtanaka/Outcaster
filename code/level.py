@@ -41,7 +41,7 @@ class Level:
         # INTERFACE DO USUÁRIO
         self.ui = UI()
         self.inventory = Inventory(self.player)
-        self.escape_menu = EscapeMenu(self.player)
+        self.escape_menu = EscapeMenu()
 
         # Particulas
         self.animation_player = AnimationPlayer()
@@ -181,7 +181,7 @@ class Level:
         if self.inventory_open:
             self.inventory.display()
         elif self.menu_open:
-            self.escape_menu.display()
+            self.escape_menu.display_esc()
         else:
             # update and draw the game
             self.visible_sprites.update()

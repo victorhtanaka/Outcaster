@@ -87,6 +87,6 @@ class Item:
         # Draw
         surface.blit(title_surf,title_rect)
 
-    def display(self,surface,selection_num,name,value):
+    def display(self,surface,name):
         pygame.draw.rect(surface,UI_BG_COLOR,self.rect)
         self.display_names(surface,name,False)

@@ -1,92 +1,157 @@
-import pygame
+import pygame, sys
 from settings import *
 
 class EscapeMenu:
-    def __init__(self,player):
+    def __init__(self):
+#####################################################################
+        self.state = "Start"
+        self.display = pygame.display.get_surface()
+        self.offset = - 50
+        self.offsetR = - 120
+        self.music = 0.5
+        self.sfx = 2
+        self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY, self.LEFT_KEY, self.RIGHT_KEY = False, False, False, False, False, False
+        self.startx, self.starty = WIDTH / 2, HEIGHT / 2 + 50
+        self.optionsx, self.optionsy = WIDTH / 2, HEIGHT / 2 + 100
+        self.creditsx, self.creditsy = WIDTH / 2, HEIGHT / 2 + 150
+        self.sairx, self.sairy = WIDTH / 2, HEIGHT / 2 + 200
 
-        #setup geral
-        self.display_surface = pygame.display.get_surface()
-        self.player = player 
-        self.attribute_nr = len(player.inventory_data)
-        self.attribute_names = list(player.inventory_data.keys())
-        self.font = pygame.font.Font(UI_FONT,UI_FONT_SIZE)
-
-        # Criação de itens
-        self.height = self.display_surface.get_size()[1] * 0.6
-        self.width = self.display_surface.get_size()[0] // 3
-        self.create_items()
-
-        # Sistema de seleção
-        self.selection_index = 0
-        self.selection_time = None
-        self.can_move = True
-
-    def input(self):
-        keys = pygame.key.get_pressed()
-
-        if self.can_move:
-            if keys[pygame.K_RIGHT] and self.selection_index < self.attribute_nr - 1:
-                self.selection_index += 1
-                self.can_move = False
-                self.selection_time = pygame.time.get_ticks()
-            elif keys[pygame.K_LEFT] and self.selection_index >= 1:
-                self.selection_index -= 1
-                self.can_move = False
-                self.selection_time = pygame.time.get_ticks()
-
-            if keys[pygame.K_SPACE]:
-                self.can_move = False
-                self.selection_time = pygame.time.get_ticks()
-                print(self.selection_index)
+        self.title_sound = pygame.mixer.Sound('gameinfo/audio/inferno.wav')
+        self.title_sound.set_volume(self.music)
+        self.title_sound.play(loops = -1)
+        
+        self.cursor_rect = pygame.Rect(0, 0, 80, 20)
+        self.cursor_rectR = pygame.Rect(0, 0, 80, 20)
+        self.cursor_rect.midtop = (self.startx + self.offset, self.starty)
+        self.cursor_rectR.midtop = (self.startx - self.offsetR, self.starty)
     
-    def selection_cooldown(self):
-        if not self.can_move:
-            current_time = pygame.time.get_ticks()
-            if current_time - self.selection_time >= 300:
-                self.can_move = True
+    def draw_text(self, text,size, x, y ):
+        font = pygame.font.Font(UI_FONT,size)
+        text_surface = font.render(text, True, 'black')
+        text_rect = text_surface.get_rect()
+        text_rect.center = (x,y)
+        self.display.blit(text_surface,text_rect)
 
-    def create_items(self):
-        self.item_list = []
+    def cursor_sound(self):
+        self.cursor_s = pygame.mixer.Sound('gameinfo/audio/cursor_sound.wav')
+        self.cursor_s.set_volume(self.sfx)
+        self.cursor_s.play()
+    
+    def enter_sound(self):
+        self.enter_s = pygame.mixer.Sound('gameinfo/audio/enter_sound.mp3')
+        self.enter_s.set_volume(self.sfx)
+        self.enter_s.play()
+    
+    def draw_icon(self,x,y):
+        icon_surface = pygame.image.load('gameinfo/graphics/cursor/sword_ico_l.png')
+        icon_rect = icon_surface.get_rect()
+        icon_rect.center = (x,y)
+        self.display.blit(icon_surface, icon_rect)
 
-        for item, index in enumerate(range(self.attribute_nr)):
-            # Posição Horizontal
-            full_width = self.display_surface.get_size()[0]
-            increment = full_width // self.attribute_nr
-            left = (item * increment) + (increment - self.width) // 2
-            
-            # Posição vertical
-            top = self.display_surface.get_size()[1] * 0.1
+    def draw_iconR(self,x,y):
+        icon_surface = pygame.image.load('gameinfo/graphics/cursor/sword_ico_r.png')
+        icon_rect = icon_surface.get_rect()
+        icon_rect.center = (x,y)
+        self.display.blit(icon_surface, icon_rect)
+        
+    def draw_cursor(self):
+        self.draw_icon(self.cursor_rect.x, self.cursor_rect.y + 5)
 
-            # Criar objeto
-            item = Item(left,top,self.width,self.height,index,self.font)
-            self.item_list.append(item)
+    def draw_cursorR(self):
+        self.draw_iconR(self.cursor_rectR.x, self.cursor_rectR.y + 5)
 
-    def display(self):
-        self.input()
-        self.selection_cooldown()
+    def blit_screen(self):
+        self.display.blit(self.display, (0, 0))
+        pygame.display.update()
+        self.reset_keys()
 
-        for index,item in enumerate(self.item_list):
+    def check_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    self.START_KEY = True
+                if event.key == pygame.K_BACKSPACE:
+                    self.BACK_KEY = True
+                if event.key == pygame.K_DOWN:
+                    self.DOWN_KEY = True
+                if event.key == pygame.K_UP:
+                    self.UP_KEY = True
+                if event.key == pygame.K_LEFT:
+                    self.LEFT_KEY = True
+                if event.key == pygame.K_RIGHT:
+                    self.RIGHT_KEY = True
+    
+    def reset_keys(self):
+        self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY, self.LEFT_KEY, self.RIGHT_KEY = False, False, False, False, False, False
 
-            # Pegar Atributos
-            name = self.attribute_names[index]
-            value = self.player.get_value_by_index(index)
-            item.display(self.display_surface,self.selection_index,name,value)
+    def display_esc(self):
+        self.run_display = True
+        while self.run_display:
+            self.check_events()
+            self.check_input()
+            self.draw_text("Começar", 35, self.startx, self.starty)
+            self.draw_text("Opções", 35, self.optionsx, self.optionsy)
+            self.draw_text("Créditos", 35, self.creditsx, self.creditsy)
+            self.draw_text("Sair", 35, self.sairx, self.sairy)
+            self.draw_text("0.1.2", 40, WIDTH / 2 - 700, HEIGHT - 160)
+            self.draw_cursor()
+            self.draw_cursorR()
+            self.blit_screen()
 
-class Item:
-    def __init__(self,l,t,w,h,index,font):
-        self.rect = pygame.Rect(l,t,w,h)
-        self.index = index
-        self.font = font
+    def move_cursor(self):
+        if self.DOWN_KEY:
+            self.cursor_sound()
+            if self.state == 'Start':
+                self.cursor_rect.midtop = (self.optionsx + self.offset, self.optionsy )
+                self.cursor_rectR.midtop = (self.optionsx - self.offsetR, self.optionsy )
+                self.state = 'Options'
+            elif self.state == 'Options':
+                self.cursor_rect.midtop = (self.creditsx + self.offset, self.creditsy )
+                self.cursor_rectR.midtop = (self.creditsx - self.offsetR, self.creditsy )
+                self.state = 'Credits'
+            elif self.state == 'Credits':
+                self.cursor_rect.midtop = (self.sairx + self.offset, self.sairy )
+                self.cursor_rectR.midtop = (self.sairx - self.offsetR, self.sairy )
+                self.state = 'Quit'
+            elif self.state == 'Quit':
+                self.cursor_rect.midtop = (self.startx + self.offset, self.starty )
+                self.cursor_rectR.midtop = (self.startx - self.offsetR, self.starty )
+                self.state = 'Start'
 
-    def display_names(self,surface,name,selected):
+        elif self.UP_KEY:
+            self.cursor_sound()
+            if self.state == 'Start':
+                self.cursor_rect.midtop = (self.sairx + self.offset, self.sairy )
+                self.cursor_rectR.midtop = (self.sairx - self.offsetR, self.sairy )
+                self.state = 'Quit'
+            elif self.state == 'Quit':
+                self.cursor_rect.midtop = (self.creditsx + self.offset, self.creditsy )
+                self.cursor_rectR.midtop = (self.creditsx - self.offsetR, self.creditsy )
+                self.state = 'Credits'
+            elif self.state == 'Credits':
+                self.cursor_rect.midtop = (self.optionsx + self.offset, self.optionsy )
+                self.cursor_rectR.midtop = (self.optionsx - self.offsetR, self.optionsy )
+                self.state = 'Options'
+            elif self.state == 'Options':
+                self.cursor_rect.midtop = (self.startx + self.offset, self.starty )
+                self.cursor_rectR.midtop = (self.startx - self.offsetR, self.starty )
+                self.state = 'Start'
 
-        # Título
-        title_surf = self.font.render(name,False,TEXT_COLOR)
-        title_rect =  title_surf.get_rect(midtop = self.rect.midtop + pygame.math.Vector2(0,20))
-
-        # Draw
-        surface.blit(title_surf,title_rect)
-
-    def display(self,surface,selection_num,name,value):
-        pygame.draw.rect(surface,UI_BG_COLOR,self.rect)
-        self.display_names(surface,name,False)
+    def check_input(self):
+        self.move_cursor()
+        if self.START_KEY:
+            self.enter_sound()
+            if self.state == 'Start':
+                self.playing = True
+            elif self.state == 'Options':
+                self.curr_menu = self.options
+            elif self.state == 'Credits':
+                self.curr_menu = self.credits
+            elif self.state == 'Quit':
+                # fazer verificador para perguntar se o jogador deseja mesmo sair do jogo
+                pygame.quit()
+                sys.exit()
+            self.run_display = False
