@@ -115,7 +115,7 @@ class Level:
     def reset_keys(self):
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY = False, False, False, False
 
-    def draw_text(self, text, size, x, y ):
+    def draw_text(self, text, size, x, y):
         font = pygame.font.Font(self.font_name,size)
         text_surface = font.render(text, True, self.WHITE)
         text_rect = text_surface.get_rect()
@@ -174,8 +174,7 @@ class Level:
         self.menu_open = not self.menu_open
 
     def run(self):
-        self.visible_sprites.custom_draw(self.player)
-        self.ui.display(self.player)
+        self.visible_sprites.custom_draw(self.player)      
 
         #Para de atualizar o jogo se inventario ou menu abertos
         if self.inventory_open:
@@ -187,6 +186,8 @@ class Level:
             self.visible_sprites.update()
             self.visible_sprites.enemy_update(self.player)
             self.player_attack_logic()
+        self.ui.display(self.player)  
+
 
 class YSortCameraGroup(pygame.sprite.Group):
     def __init__(self):
@@ -220,3 +221,4 @@ class YSortCameraGroup(pygame.sprite.Group):
         enemy_sprites = [sprite for sprite in self.sprites() if hasattr(sprite,'sprite_type') and sprite.sprite_type == 'enemy']
         for enemy in enemy_sprites:
             enemy.enemy_update(player)
+        
