@@ -30,7 +30,7 @@ class Menu():
         self.game.draw_iconR(self.cursor_rectR.x, self.cursor_rectR.y + 5)
 
     def draw_logo(self):
-        self.game.menu_logo(WIDTH / 2, HEIGHT / 2 - 200)
+        self.game.menu_logo(WIDTH / 2, HEIGHT / 2 - 150)
 
     def blit_screen(self):
         self.game.screen.blit(self.game.display, (0, 0))
@@ -41,10 +41,10 @@ class MainMenu(Menu):
     def __init__(self, game):
         Menu.__init__(self, game)
         self.state = "Start"
-        self.startx, self.starty = self.mid_w, self.mid_h 
-        self.optionsx, self.optionsy = self.mid_w, self.mid_h + 50
-        self.creditsx, self.creditsy = self.mid_w, self.mid_h + 100
-        self.sairx, self.sairy = self.mid_w, self.mid_h + 150
+        self.startx, self.starty = self.mid_w, self.mid_h + 50
+        self.optionsx, self.optionsy = self.mid_w, self.mid_h + 100
+        self.creditsx, self.creditsy = self.mid_w, self.mid_h + 150
+        self.sairx, self.sairy = self.mid_w, self.mid_h + 200
 
         self.title_sound = pygame.mixer.Sound('gameinfo/audio/inferno.wav')
         self.title_sound.set_volume(self.music)
