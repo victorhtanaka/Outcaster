@@ -1,7 +1,7 @@
 import pygame, sys
 from settings import *
 
-class EscapeMenu:
+class EscapeMenu():
     def __init__(self):
 #####################################################################
         self.state = "Start"
@@ -15,7 +15,7 @@ class EscapeMenu:
         self.optionsx, self.optionsy = WIDTH / 2, HEIGHT / 2 - 15
         self.creditsx, self.creditsy = WIDTH / 2, HEIGHT / 2 + 35
         self.sairx, self.sairy = WIDTH / 2, HEIGHT / 2 + 85
-        
+
         self.cursor_rect = pygame.Rect(0, 0, 80, 20)
         self.cursor_rectR = pygame.Rect(0, 0, 80, 20)
         self.cursor_rect.midtop = (self.startx + self.offset, self.starty)
@@ -150,11 +150,103 @@ class EscapeMenu:
             if self.state == 'Start':
                 pass
             elif self.state == 'Options':
-                self.curr_menu = self.options
+                self.curr_menu = self.esc_options
             elif self.state == 'Credits':
-                self.curr_menu = self.credits
+                self.curr_menu = self.esc_controls
             elif self.state == 'Quit':
                 # fazer verificador para perguntar se o jogador deseja mesmo sair do jogo
                 pygame.quit()
                 sys.exit()
+            self.run_display = False
+
+class EscapeOptionsMenu(EscapeMenu):
+    def __init__(self):
+        self.state = 'Música'
+        self.volx, self.voly = self.mid_w, self.mid_h - 100
+        self.music_volx, self.music_voly = self.mid_w, self.mid_h -50
+        self.sfx_volx, self.sfx_voly = self.mid_w, self.mid_h + 50
+        self.controlsx, self.controlsy = self.mid_w, self.mid_h + 150
+
+        #cursor pos
+        self.cursor_rect.midtop = (self.music_volx + self.offset, self.music_voly)
+        self.cursor_rectR.midtop = (self.music_volx - self.offsetR, self.music_voly)
+
+    def display_menu(self):
+        self.run_display = True
+        while self.run_display:
+            self.game.check_events()
+            if self.game.START_KEY or self.game.BACK_KEY:
+                self.enter_sound()
+                self.game.curr_menu = self.game.main_menu
+                self.run_display = False
+            self.ast_m = "*" * (int(self.music))
+            self.ast_s = "*" * (int(self.sfx))
+            self.game.check_events()
+            self.check_input()
+            self.game.display.fill(self.game.BLACK)
+            self.game.draw_text('Opções', 45, WIDTH / 2, HEIGHT / 2 - 200)
+            self.game.draw_text("Volume", 45, WIDTH / 2, HEIGHT / 2 - 100)
+            self.game.draw_text("Música", 35, self.music_volx, self.music_voly)
+            self.game.draw_text(f"{self.music} {self.ast_m}", 30, self.volx, self.voly + 85)
+            self.game.draw_text("SFX", 35, self.sfx_volx, self.sfx_voly)
+            self.game.draw_text(f"{self.sfx} {self.ast_s}", 30, self.volx, self.voly + 185)
+            self.game.draw_text('Controles', 35, self.controlsx, self.controlsy)
+            self.draw_cursor()
+            self.draw_cursorR() 
+            self.blit_screen()
+
+    def move_cursor(self):
+        if self.game.DOWN_KEY:
+            self.cursor_sound()
+            if self.state == 'Música':
+                self.cursor_rect.midtop = (self.sfx_volx + self.offset, self.sfx_voly )
+                self.cursor_rectR.midtop = (self.sfx_volx - self.offsetR, self.sfx_voly )
+                self.state = 'SFX'
+            elif self.state == 'SFX':
+                self.cursor_rect.midtop = (self.controlsx + self.offset, self.controlsy )
+                self.cursor_rectR.midtop = (self.controlsx - self.offsetR, self.controlsy )
+                self.state = 'Controles'
+            elif self.state == 'Controles':
+                self.cursor_rect.midtop = (self.music_volx + self.offset, self.music_voly )
+                self.cursor_rectR.midtop = (self.music_volx - self.offsetR, self.music_voly )
+                self.state = 'Música'
+        elif self.game.UP_KEY:
+            self.cursor_sound()
+            if self.state == 'Música':
+                self.cursor_rect.midtop = (self.controlsx + self.offset, self.controlsy )
+                self.cursor_rectR.midtop = (self.controlsx - self.offsetR, self.controlsy )
+                self.state = 'Controles'
+            elif self.state == 'SFX':
+                self.cursor_rect.midtop = (self.music_volx + self.offset, self.music_voly )
+                self.cursor_rectR.midtop = (self.music_volx - self.offsetR, self.music_voly )
+                self.state = 'Música'
+            elif self.state == 'Controles':
+                self.cursor_rect.midtop = (self.sfx_volx + self.offset, self.sfx_voly )
+                self.cursor_rectR.midtop = (self.sfx_volx - self.offsetR, self.sfx_voly )
+                self.state = 'SFX'
+
+        # mudar barra de som
+        elif self.game.LEFT_KEY:
+            self.cursor_sound()
+            if self.state == 'Música':
+                if self.music != 0:
+                    self.music -= 1
+            elif self.state == 'SFX':
+                if self.sfx != 0:
+                    self.sfx -= 1
+        elif self.game.RIGHT_KEY:
+            self.cursor_sound()
+            if self.state == 'Música':
+                if self.music != 10:
+                    self.music += 1
+            elif self.state == 'SFX':
+                if self.sfx != 10:
+                    self.sfx += 1
+    
+    def check_input(self):
+        self.move_cursor()
+        if self.game.START_KEY:
+            self.enter_sound()
+            if self.state == 'Controls':
+                self.game.curr_menu = self.game.controls
             self.run_display = False

@@ -62,11 +62,11 @@ class MainMenu(Menu):
     def display_menu(self):
         self.run_display = True
         while self.run_display:
-            self.clock.tick(60)
+            #self.clock.tick(60)
             self.game.check_events()
             self.check_input()
             self.game.display.fill(self.game.BLACK)
-            self.game.display.blit(pygame.image.frombuffer(self.img.tobytes(), self.shape, "BGR"), (0, 0))
+            #self.game.display.blit(pygame.image.frombuffer(self.img.tobytes(), self.shape, "BGR"), (0, 0))
             self.game.draw_text("Começar", 35, self.startx, self.starty)
             self.game.draw_text("Opções", 35, self.optionsx, self.optionsy)
             self.game.draw_text("Créditos", 35, self.creditsx, self.creditsy)
