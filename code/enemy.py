@@ -17,7 +17,7 @@ class Enemy(Entity):
 
 		# Movimento
 		self.rect = self.image.get_rect(topleft = pos)
-		self.hitbox = self.rect.inflate(-10, HITBOX_OFFSET['player'])
+		self.hitbox = self.rect.inflate(-5, HITBOX_OFFSET['player'])
 		self.obstacle_sprites = obstacle_sprites
 
 		# Stats

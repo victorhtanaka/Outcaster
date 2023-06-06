@@ -2,14 +2,15 @@ import pygame, sys
 from settings import *
 from level import Level
 from menu import *
-from pvidplayer import Video
+from npc import NPC
+import math
      
 class Game:
     def __init__(self):
     
         #setup geral
         pygame.init()
-        self.screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
+        self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption('Jogo')
         self.clock = pygame.time.Clock()
 
@@ -28,6 +29,10 @@ class Game:
     def game_loop(self):
         while self.playing:
             g.run()
+            self.check_events()
+            self.level.visible.update()
+            self.check_interaction()
+            self.level.run()
 
     def check_events(self):
         for event in pygame.event.get():
@@ -47,6 +52,20 @@ class Game:
                     self.LEFT_KEY = True
                 if event.key == pygame.K_RIGHT:
                     self.RIGHT_KEY = True
+    
+    def check_interaction(self):
+        player_pos = self.level.player.rect.center
+        for npc in self.level.visible_sprites:
+            if isinstance(npc, NPC):
+                npc.update()
+                npc_pos = npc.rect.center
+                distance = math.dist(player_pos, npc_pos)
+                if distance < INTERACTION_DISTANCE and npc.interactable:
+                    self.execute_dialogue(npc)
+
+    def execute_dialogue(self, npc):
+        if npc.interactable:
+            print("NPC Dialogue: Hello World!")
 
     def reset_keys(self):
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY, self.LEFT_KEY, self.RIGHT_KEY = False, False, False, False, False, False
@@ -54,7 +73,7 @@ class Game:
 ################ DA PRA OTIMIZAR ESSA PARTE #################
     def draw_text(self, text,size, x, y ):
         font = pygame.font.Font(UI_FONT,size)
-        text_surface = font.render(text, True, self.WHITE)
+        text_surface = font.render(text, False, self.WHITE)
         text_rect = text_surface.get_rect()
         text_rect.center = (x,y)
         self.display.blit(text_surface,text_rect)
@@ -81,13 +100,6 @@ class Game:
     def menu_bg(self):
         menu_bg = pygame.image.load('gameinfo/graphics/cursor/menu_bg.png')
         self.display.blit(menu_bg, (400,0))
-
-    #def intro(self):
-    #    self.vid = Video('gameinfo/graphics/logo/videoplayback.mp4')
-    #    self.vid.set_size((1920,1080))
-    #    while True:
-    #        self.vid.draw(self.screen,(0,0))
-
 
     def run(self):
         

@@ -18,6 +18,8 @@ ITEM_BOX_SIZE = 80
 UI_FONT = 'gameinfo/graphics/font/m5x7.ttf'
 UI_FONT_SIZE = 64
 
+INTERACTION_DISTANCE = 50
+
 #CORES GERAIS
 WATER_COLOR = '#71ddee'
 UI_BG_COLOR = '#222222'

@@ -12,10 +12,16 @@ from particles import AnimationPlayer
 from magic import MagicPlayer
 from inventory import Inventory
 from escape_menu import EscapeMenu
+from npc import NPC
+import math
 
 class Level:
     def __init__(self):
         
+        # npc
+        self.visible = pygame.sprite.Group()
+        self.visible_sprites = pygame.sprite.Group()
+
         # superfície de exibição
         self.display_surface = pygame.display.get_surface()
 
@@ -37,6 +43,7 @@ class Level:
 
         # SETUP SPRITES
         self.create_map()
+        self.create_npc()
 
         # INTERFACE DO USUÁRIO
         self.ui = UI()
@@ -96,6 +103,22 @@ class Level:
 									self.obstacle_sprites,
 									self.damage_player,
                                     self.trigger_death_particles)
+
+    def create_npc(self):
+        npc_position = (2162, 870)
+        npc = NPC(npc_position)
+        self.visible_sprites.add(npc)
+        self.visible.add(npc)
+        self.obstacle_sprites.add(npc)
+
+    def check_interaction(self):
+        for npc in self.visible:
+            if isinstance(npc, NPC):
+                if npc.hitbox.colliderect(self.player.hitbox):
+                    npc.check_interaction(self.player.hitbox)
+
+    def execute_dialogue(self, npc):
+        print('Hello World')
 
     def check_events(self):
         for event in pygame.event.get():

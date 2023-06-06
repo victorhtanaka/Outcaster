@@ -1,8 +1,10 @@
 import pygame, sys
 from settings import *
+import cv2
 
 class Menu():
     def __init__(self, game):
+        pygame.init()
         self.game = game
         self.mid_w, self.mid_h = WIDTH / 2, HEIGHT / 2
         self.run_display = True
@@ -12,6 +14,10 @@ class Menu():
         self.offsetR = - 120
         self.music = 0.5
         self.sfx = 2
+        self.cap = cv2.VideoCapture('gameinfo/graphics/logo/videoplayback.mp4')
+        self.success, self.img = self.cap.read()
+        self.shape = self.img.shape[1::-1]
+        self.clock = pygame.time.Clock()
 
     def cursor_sound(self):
         self.cursor_s = pygame.mixer.Sound('gameinfo/audio/cursor_sound.wav')
@@ -56,11 +62,11 @@ class MainMenu(Menu):
     def display_menu(self):
         self.run_display = True
         while self.run_display:
+            self.clock.tick(60)
             self.game.check_events()
             self.check_input()
             self.game.display.fill(self.game.BLACK)
-            #self.game.intro()
-            #self.game.menu_bg()
+            self.game.display.blit(pygame.image.frombuffer(self.img.tobytes(), self.shape, "BGR"), (0, 0))
             self.game.draw_text("Começar", 35, self.startx, self.starty)
             self.game.draw_text("Opções", 35, self.optionsx, self.optionsy)
             self.game.draw_text("Créditos", 35, self.creditsx, self.creditsy)
@@ -160,7 +166,7 @@ class OptionsMenu(Menu):
             self.game.draw_text(f"{self.sfx} {self.ast_s}", 30, self.volx, self.voly + 185)
             self.game.draw_text('Controles', 35, self.controlsx, self.controlsy)
             self.draw_cursor()
-            self.draw_cursorR()
+            self.draw_cursorR() 
             self.blit_screen()
 
     def move_cursor(self):

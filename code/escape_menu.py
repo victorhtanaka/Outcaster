@@ -6,15 +6,15 @@ class EscapeMenu:
 #####################################################################
         self.state = "Start"
         self.display = pygame.display.get_surface()
-        self.offset = - 50
-        self.offsetR = - 120
+        self.offset = - 105
+        self.offsetR = - 185
         self.music = 0.5
         self.sfx = 2
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY, self.LEFT_KEY, self.RIGHT_KEY = False, False, False, False, False, False
-        self.startx, self.starty = WIDTH / 2, HEIGHT / 2
-        self.optionsx, self.optionsy = WIDTH / 2, HEIGHT / 2 + 50
-        self.creditsx, self.creditsy = WIDTH / 2, HEIGHT / 2 + 100
-        self.sairx, self.sairy = WIDTH / 2, HEIGHT / 2 + 150
+        self.startx, self.starty = WIDTH / 2, HEIGHT / 2 - 65
+        self.optionsx, self.optionsy = WIDTH / 2, HEIGHT / 2 - 15
+        self.creditsx, self.creditsy = WIDTH / 2, HEIGHT / 2 + 35
+        self.sairx, self.sairy = WIDTH / 2, HEIGHT / 2 + 85
         
         self.cursor_rect = pygame.Rect(0, 0, 80, 20)
         self.cursor_rectR = pygame.Rect(0, 0, 80, 20)
@@ -26,11 +26,11 @@ class EscapeMenu:
         self.run_display = True
         while self.run_display:
             self.check_events()
-            self.check_input()
-            self.draw_text("Começar", 35, self.startx, self.starty)
+            self.check_input(self)
+            self.draw_text("Voltar ao Jogo", 35, self.startx, self.starty)
             self.draw_text("Opções", 35, self.optionsx, self.optionsy)
-            self.draw_text("Créditos", 35, self.creditsx, self.creditsy)
-            self.draw_text("Sair", 35, self.sairx, self.sairy)
+            self.draw_text("Controles", 35, self.creditsx, self.creditsy)
+            self.draw_text("Voltar ao menu", 35, self.sairx, self.sairy)
             self.draw_text("0.1.2", 40, WIDTH / 2 - 700, HEIGHT - 160)
             self.draw_cursor()
             self.draw_cursorR()
@@ -72,10 +72,10 @@ class EscapeMenu:
         self.display.blit(self.esc_surface, (0,0))
         
     def draw_cursor(self):
-        self.draw_icon(self.cursor_rect.x, self.cursor_rect.y + 5)
+        self.draw_icon(self.cursor_rect.x, self.cursor_rect.y + 2)
 
     def draw_cursorR(self):
-        self.draw_iconR(self.cursor_rectR.x, self.cursor_rectR.y + 5)
+        self.draw_iconR(self.cursor_rectR.x, self.cursor_rectR.y + 2)
 
     def blit_screen(self):
         self.display.blit(self.display, (0, 0))
@@ -143,12 +143,12 @@ class EscapeMenu:
                 self.cursor_rectR.midtop = (self.startx - self.offsetR, self.starty )
                 self.state = 'Start'
 
-    def check_input(self):
+    def check_input(self,level):
         self.move_cursor()
         if self.START_KEY:
             self.enter_sound()
             if self.state == 'Start':
-                self.playing = True
+                pass
             elif self.state == 'Options':
                 self.curr_menu = self.options
             elif self.state == 'Credits':
