@@ -7,9 +7,9 @@ class Inventory:
         #setup geral
         self.display_surface = pygame.display.get_surface()
         self.player = player 
-        self.attribute_nr = len(player.inventory_data)
-        self.attribute_names = list(player.inventory_data.keys())
-        self.max_values = list(player.inventory.values())
+        self.attribute_nr = len(self.player.inventory_data)
+        self.attribute_names = list(self.player.inventory_data.keys())
+        self.max_values = list(self.player.inventory_data.values())
         self.font = pygame.font.Font(UI_FONT,UI_FONT_SIZE)
 
         # Criação de itens
@@ -88,13 +88,8 @@ class Item:
         title_surf = self.font.render(name,False,color)
         title_rect = title_surf.get_rect(midtop = self.rect.midtop + pygame.math.Vector2(0,20))
 
-		# cost 
-        cost_surf = self.font.render(f'{int(cost)}',False,color)
-        cost_rect = cost_surf.get_rect(midbottom = self.rect.midbottom - pygame.math.Vector2(0,20))
-
 		# draw 
         surface.blit(title_surf,title_rect)
-        surface.blit(cost_surf,cost_rect)
 
     def display_bar(self,surface,value,max_value,selected):
 
