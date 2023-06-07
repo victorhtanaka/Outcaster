@@ -221,7 +221,7 @@ class OptionsMenu(Menu):
         self.move_cursor()
         if self.game.START_KEY:
             self.enter_sound()
-            if self.state == 'Controls':
+            if self.state == 'Controles':
                 self.game.curr_menu = self.game.controls
             self.run_display = False
 
@@ -253,9 +253,12 @@ class ControlsMenu(Menu):
         self.run_display = True
         while self.run_display:
             self.game.check_events()
-            if self.game.BACK_KEY:
+            if self.game.START_KEY or self.game.BACK_KEY:
                 self.enter_sound()
-                self.game.curr_menu = self.game.options_menu
+                self.game.curr_menu = self.game.main_menu
                 self.run_display = False
-
+            self.game.display.fill(self.game.BLACK)
+            self.game.draw_text('Créditos', 40, WIDTH / 2, HEIGHT / 2 - 200)
+            self.game.draw_text('Design de Interface:', 40, WIDTH / 2, HEIGHT / 2 - 120)
+            self.game.draw_text('Yan Ferreira', 35, WIDTH / 2, HEIGHT / 2 - 50)
             self.blit_screen()
