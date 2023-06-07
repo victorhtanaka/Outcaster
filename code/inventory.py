@@ -9,6 +9,7 @@ class Inventory:
         self.player = player 
         self.attribute_nr = len(player.inventory_data)
         self.attribute_names = list(player.inventory_data.keys())
+        self.max_values = list(player.inventory.values())
         self.font = pygame.font.Font(UI_FONT,UI_FONT_SIZE)
 
         # Criação de itens
@@ -37,7 +38,7 @@ class Inventory:
             if keys[pygame.K_SPACE]:
                 self.can_move = False
                 self.selection_time = pygame.time.get_ticks()
-                print(self.selection_index)
+                self.item_list[self.selection_index].trigger(self.player)
     
     def selection_cooldown(self):
         if not self.can_move:
@@ -70,6 +71,8 @@ class Inventory:
             # Pegar Atributos
             name = self.attribute_names[index]
             value = self.player.get_value_by_index(index)
+            max_value = self.max_values[index]
+            cost = self.player.get_cost_by_index(index)
             item.display(self.display_surface,self.selection_index,name,value)
 
 class Item:
@@ -79,14 +82,54 @@ class Item:
         self.font = font
 
     def display_names(self,surface,name,selected):
+        color = 'gold' if selected else TEXT_COLOR
 
-        # Título
-        title_surf = self.font.render(name,False,TEXT_COLOR)
-        title_rect =  title_surf.get_rect(midtop = self.rect.midtop + pygame.math.Vector2(0,20))
+		# title
+        title_surf = self.font.render(name,False,color)
+        title_rect = title_surf.get_rect(midtop = self.rect.midtop + pygame.math.Vector2(0,20))
 
-        # Draw
+		# cost 
+        cost_surf = self.font.render(f'{int(cost)}',False,color)
+        cost_rect = cost_surf.get_rect(midbottom = self.rect.midbottom - pygame.math.Vector2(0,20))
+
+		# draw 
         surface.blit(title_surf,title_rect)
+        surface.blit(cost_surf,cost_rect)
 
-    def display(self,surface,name):
-        pygame.draw.rect(surface,UI_BG_COLOR,self.rect)
-        self.display_names(surface,name,False)
+    def display_bar(self,surface,value,max_value,selected):
+
+		# drawing setup
+        top = self.rect.midtop + pygame.math.Vector2(0,60)
+        bottom = self.rect.midbottom - pygame.math.Vector2(0,60)
+        color = BAR_COLOR_SELECTED if selected else BAR_COLOR
+
+		# bar setup
+        full_height = bottom[1] - top[1]
+        relative_number = (value / max_value) * full_height
+        value_rect = pygame.Rect(top[0] - 15,bottom[1] - relative_number,30,10)
+
+		# draw elements
+        pygame.draw.line(surface,color,top,bottom,5)
+        pygame.draw.rect(surface,color,value_rect)
+
+    def trigger(self,player):
+        upgrade_attribute = list(player.stats.keys())[self.index]
+
+        if player.exp >= player.upgrade_cost[upgrade_attribute] and player.stats[upgrade_attribute] < player.max_stats[upgrade_attribute]:
+            player.exp -= player.upgrade_cost[upgrade_attribute]
+            player.stats[upgrade_attribute] *= 1.2
+            player.upgrade_cost[upgrade_attribute] *= 1.4
+
+        if player.stats[upgrade_attribute] > player.max_stats[upgrade_attribute]:
+            player.stats[upgrade_attribute] = player.max_stats[upgrade_attribute]
+
+    def display(self,surface,selection_num,name,value,max_value,cost):
+        if self.index == selection_num:
+            pygame.draw.rect(surface,UPGRADE_BG_COLOR_SELECTED,self.rect)
+            pygame.draw.rect(surface,UI_BORDER_COLOR,self.rect,4)
+        else:
+            pygame.draw.rect(surface,UI_BG_COLOR,self.rect)
+            pygame.draw.rect(surface,UI_BORDER_COLOR,self.rect,4)
+	
+        self.display_names(surface,name,cost,self.index == selection_num)
+        self.display_bar(surface,value,max_value,self.index == selection_num)

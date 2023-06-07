@@ -67,7 +67,7 @@ class EscapeMenu():
         self.display.blit(icon_surface, icon_rect)
 
     def esc_background(self):
-        self.esc_surface = pygame.image.load('gameinfo/graphics/logo/background.png').convert_alpha()
+        self.esc_surface = pygame.image.load('gameinfo/graphics/logo/background.png')
         self.esc_rect = self.esc_surface.get_rect()
         self.display.blit(self.esc_surface, (0,0))
         
