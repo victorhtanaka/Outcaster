@@ -2,8 +2,9 @@ import pygame, sys
 from settings import *
 from level import Level
 from menu import *
-from npc import NPC
+from npc import NPC1
 import math
+import player
      
 class Game:
     def __init__(self):
@@ -31,8 +32,11 @@ class Game:
             g.run()
             self.check_events()
             self.level.visible.update()
-            self.check_interaction()
+            player_rect = self.level.player.rect
+            self.checking_interaction(player_rect)
+            self.execute_dialogue(self)
             self.level.run()
+
 
     def check_events(self):
         for event in pygame.event.get():
@@ -52,20 +56,32 @@ class Game:
                     self.LEFT_KEY = True
                 if event.key == pygame.K_RIGHT:
                     self.RIGHT_KEY = True
-    
-    def check_interaction(self):
+                keys = pygame.key.get_pressed()
+                if keys[pygame.K_g]:
+                    player_pos = self.level.player.rect.center
+                    for npc in self.level.visible_sprites:
+                        if isinstance(npc, NPC1) and npc.interactable:
+                            npc_pos = npc.rect.center
+                            player_pos = player.rect.center
+                            distance = math.dist(player_pos, npc_pos)
+                            if distance < INTERACTION_DISTANCE:
+                                self.execute_dialogue(npc)
+                                break
+
+    def checking_interaction(self, player):
         player_pos = self.level.player.rect.center
         for npc in self.level.visible_sprites:
-            if isinstance(npc, NPC):
+            if isinstance(npc, NPC1):
                 npc.update()
                 npc_pos = npc.rect.center
                 distance = math.dist(player_pos, npc_pos)
-                if distance < INTERACTION_DISTANCE and npc.interactable:
-                    self.execute_dialogue(npc)
-
+                print(distance)           # pode excluir esse print, é só pra saber a distância certa
+                INTERACTION_DISTANCE = True
+                if distance < INTERACTION_DISTANCE:
+                    print(self.execute_dialogue(npc))
+                    
     def execute_dialogue(self, npc):
-        if npc.interactable:
-            print("NPC Dialogue: Hello World!")
+        print("NPC Dialogue: Hello World!")
 
     def reset_keys(self):
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY, self.LEFT_KEY, self.RIGHT_KEY = False, False, False, False, False, False

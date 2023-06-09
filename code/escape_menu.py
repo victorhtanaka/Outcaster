@@ -15,11 +15,14 @@ class EscapeMenu():
         self.optionsx, self.optionsy = WIDTH / 2, HEIGHT / 2 - 15
         self.creditsx, self.creditsy = WIDTH / 2, HEIGHT / 2 + 35
         self.sairx, self.sairy = WIDTH / 2, HEIGHT / 2 + 85
+        self.mid_w, self.mid_h = WIDTH / 2, HEIGHT / 2
 
         self.cursor_rect = pygame.Rect(0, 0, 80, 20)
         self.cursor_rectR = pygame.Rect(0, 0, 80, 20)
         self.cursor_rect.midtop = (self.startx + self.offset, self.starty)
         self.cursor_rectR.midtop = (self.startx - self.offsetR, self.starty)
+        self.esc_options = EscapeOptionsMenu()
+        self.esc_controls = EscapeControlsMenu()
 
     
     def display_esc(self):
@@ -248,5 +251,23 @@ class EscapeOptionsMenu(EscapeMenu):
         if self.game.START_KEY:
             self.enter_sound()
             if self.state == 'Controls':
-                self.game.curr_menu = self.game.controls
+                self.game.curr_menu = self.esc_controls
             self.run_display = False
+    
+class EscapeControlsMenu(EscapeMenu):
+    def __init__(self, game):
+        EscapeMenu.__init__(self, game)
+
+    def display_menu(self):
+        self.run_display = True
+        while self.run_display:
+            self.game.check_events()
+            if self.game.START_KEY or self.game.BACK_KEY:
+                self.enter_sound()
+                self.game.curr_menu = self.game.main_menu
+                self.run_display = False
+            self.game.display.fill(self.game.BLACK)
+            self.game.draw_text('Créditos', 40, WIDTH / 2, HEIGHT / 2 - 200)
+            self.game.draw_text('Design de Interface:', 40, WIDTH / 2, HEIGHT / 2 - 120)
+            self.game.draw_text('Yan Ferreira', 35, WIDTH / 2, HEIGHT / 2 - 50)
+            self.blit_screen()

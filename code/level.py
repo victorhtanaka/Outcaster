@@ -12,13 +12,14 @@ from particles import AnimationPlayer
 from magic import MagicPlayer
 from inventory import Inventory
 from escape_menu import EscapeMenu
-from npc import NPC
+from npc import NPC1
 import math
 
 class Level:
     def __init__(self):
         
         # npc
+        self.npc = None
         self.visible = pygame.sprite.Group()
         self.visible_sprites = pygame.sprite.Group()
 
@@ -106,7 +107,7 @@ class Level:
 
     def create_npc(self):
         npc_position = (2162, 870)
-        npc = NPC(npc_position)
+        npc = NPC1(npc_position)
         self.visible_sprites.add(npc)
         self.visible.add(npc)
         self.obstacle_sprites.add(npc)
