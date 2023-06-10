@@ -11,9 +11,8 @@ from enemy import Enemy
 from particles import AnimationPlayer
 from magic import MagicPlayer
 from inventory import Inventory
-from escape_menu import EscapeMenu
+from escape_menu import *
 from npc import NPC1
-import math
 
 class Level:
     def __init__(self):
@@ -103,7 +102,8 @@ class Level:
 									[self.visible_sprites,self.attackable_sprites],
 									self.obstacle_sprites,
 									self.damage_player,
-                                    self.trigger_death_particles)
+                                    self.trigger_death_particles,
+                                    self.add_coin)
 
     def create_npc(self):
         npc_position = (2162, 870)
@@ -114,7 +114,7 @@ class Level:
 
     def check_interaction(self):
         for npc in self.visible:
-            if isinstance(npc, NPC):
+            if isinstance(npc, NPC1):
                 if npc.hitbox.colliderect(self.player.hitbox):
                     npc.check_interaction(self.player.hitbox)
 
@@ -148,7 +148,7 @@ class Level:
 
     def create_attack(self):
 
-        self.current_attack = Weapon(self.player, [self.attack_sprites])
+        self.current_attack = Weapon(self.player, [self.visible_sprites,self.attack_sprites])
 
     def create_magic(self,style,strength,cost):
         if style == 'heal':
@@ -188,6 +188,10 @@ class Level:
     def trigger_death_particles(self,pos,particle_type):
         
         self.animation_player.create_particles(particle_type,pos,self.visible_sprites)
+    
+    def add_coin(self,amount):
+
+        self.player.coin += amount
 
     def toggle_inventory(self):
 
@@ -199,6 +203,7 @@ class Level:
 
     def run(self):
         self.visible_sprites.custom_draw(self.player)      
+        self.ui.display(self.player)
 
         #Para de atualizar o jogo se inventario ou menu abertos
         if self.inventory_open:
@@ -210,8 +215,6 @@ class Level:
             self.visible_sprites.update()
             self.visible_sprites.enemy_update(self.player)
             self.player_attack_logic()
-        self.ui.display(self.player)  
-
 
 class YSortCameraGroup(pygame.sprite.Group):
     def __init__(self):

@@ -4,11 +4,11 @@ from support import import_folder
 from entity import Entity
 
 class Player(Entity):
-    def __init__(self, pos, groups, obstacle_sprites, create_attack, destroy_attack, create_magic):
+    def __init__(self,pos,groups,obstacle_sprites,create_attack,destroy_attack,create_magic):
         super().__init__(groups)
-        self.image = pygame.image.load('gameinfo/graphics/player/down/down (1).png').convert_alpha()
+        self.image = pygame.image.load('gameinfo/graphics/player/down/down_0.png').convert_alpha()
         self.rect = self.image.get_rect(topleft=pos)
-        self.hitbox = self.rect.inflate(-20, HITBOX_OFFSET['player'])
+        self.hitbox = self.rect.inflate(-6,HITBOX_OFFSET['player'])
 
         # IMPORTAR PLAYER ASSETS
         self.import_player_assets()
@@ -41,7 +41,7 @@ class Player(Entity):
         self.inventory_data = {'coins': 10,'rock': 2,'diamonds': 3,'gold': 10}
         self.health = self.stats['health'] 
         self.energy = self.stats['energy'] 
-        self.exp = 123
+        self.coin = 200
         self.speed = self.stats['speed']
 
         # damage timer
@@ -142,18 +142,15 @@ class Player(Entity):
         else:
             if 'attack' in self.status:
                 self.status = self.status.replace('_attack','')
-
+    
+    # Controle de cooldown de ataque, magica e vulnerabilidade
     def cooldowns(self):
         current_time = pygame.time.get_ticks()
 
         if self.attacking:
-            if current_time - self.attack_time >= self.attack_cooldown + weapon_data[self.weapon]['cooldown']:
+            if current_time - self.attack_time >= self.attack_cooldown + weapon_data[self.weapon]['cooldown'] - 250:
                 self.attacking = False
                 self.destroy_attack()
-
-        if not self.can_switch_weapon:
-            if current_time - self.weapon_switch_time >= self.switch_duration_cooldown:
-                self.can_switch_weapon = True
 
         if not self.can_switch_magic:
             if current_time - self.magic_switch_time >= self.switch_duration_cooldown:
@@ -173,7 +170,7 @@ class Player(Entity):
 
         #setar imagem
         self.image = animation[int(self.frame_index)]
-        self.rect = self.image.get_rect(center=self.hitbox.center)
+        self.rect = self.image.get_rect(center = self.hitbox.center)
 
         # flicker 
         if not self.vulnerable:

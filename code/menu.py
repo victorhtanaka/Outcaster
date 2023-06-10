@@ -1,6 +1,5 @@
 import pygame, sys
 from settings import *
-import cv2
 
 class Menu():
     def __init__(self, game):
@@ -14,10 +13,6 @@ class Menu():
         self.offsetR = - 120
         self.music = 0.5
         self.sfx = 2
-        self.cap = cv2.VideoCapture('gameinfo/graphics/logo/videoplayback.mp4')
-        self.success, self.img = self.cap.read()
-        self.shape = self.img.shape[1::-1]
-        self.clock = pygame.time.Clock()
 
     def cursor_sound(self):
         self.cursor_s = pygame.mixer.Sound('gameinfo/audio/cursor_sound.wav')
@@ -65,9 +60,9 @@ class MainMenu(Menu):
             #self.clock.tick(60)
             self.game.check_events()
             self.check_input()
-            self.game.display.fill(self.game.BLACK)
+            self.game.display.fill('black')
             #self.game.display.blit(pygame.image.frombuffer(self.img.tobytes(), self.shape, "BGR"), (0, 0))
-            self.game.draw_text("Começar", 35, self.startx, self.starty)
+            self.game.draw_text("Começar o jogo", 35, self.startx, self.starty)
             self.game.draw_text("Opções", 35, self.optionsx, self.optionsy)
             self.game.draw_text("Créditos", 35, self.creditsx, self.creditsy)
             self.game.draw_text("Sair", 35, self.sairx, self.sairy)
@@ -157,7 +152,7 @@ class OptionsMenu(Menu):
             self.ast_s = "*" * (int(self.sfx))
             self.game.check_events()
             self.check_input()
-            self.game.display.fill(self.game.BLACK)
+            self.game.display.fill('black')
             self.game.draw_text('Opções', 45, WIDTH / 2, HEIGHT / 2 - 200)
             self.game.draw_text("Volume", 45, WIDTH / 2, HEIGHT / 2 - 100)
             self.game.draw_text("Música", 35, self.music_volx, self.music_voly)
@@ -238,7 +233,7 @@ class CreditsMenu(Menu):
                 self.enter_sound()
                 self.game.curr_menu = self.game.main_menu
                 self.run_display = False
-            self.game.display.fill(self.game.BLACK)
+            self.game.display.fill('black')
             self.game.draw_text('Créditos', 40, WIDTH / 2, HEIGHT / 2 - 200)
             self.game.draw_text('Design de Interface:', 40, WIDTH / 2, HEIGHT / 2 - 120)
             self.game.draw_text('Yan Ferreira', 35, WIDTH / 2, HEIGHT / 2 - 50)
@@ -257,7 +252,7 @@ class ControlsMenu(Menu):
                 self.enter_sound()
                 self.game.curr_menu = self.game.main_menu
                 self.run_display = False
-            self.game.display.fill(self.game.BLACK)
+            self.game.display.fill('black')
             self.game.draw_text('Créditos', 40, WIDTH / 2, HEIGHT / 2 - 200)
             self.game.draw_text('Design de Interface:', 40, WIDTH / 2, HEIGHT / 2 - 120)
             self.game.draw_text('Yan Ferreira', 35, WIDTH / 2, HEIGHT / 2 - 50)

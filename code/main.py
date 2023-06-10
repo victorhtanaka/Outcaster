@@ -4,6 +4,7 @@ from level import Level
 from menu import *
 from npc import NPC1
 import math
+from escape_menu import *
 import player
      
 class Game:
@@ -11,7 +12,7 @@ class Game:
     
         #setup geral
         pygame.init()
-        self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
+        self.screen = pygame.display.set_mode((WIDTH, HEIGHT), flags=pygame.SCALED, vsync=1)
         pygame.display.set_caption('Jogo')
         self.clock = pygame.time.Clock()
 
@@ -19,8 +20,6 @@ class Game:
         self.running, self.playing = True, False
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY, self.LEFT_KEY, self.RIGHT_KEY = False, False, False, False, False, False
         self.display = pygame.Surface((WIDTH,HEIGHT))
-        self.font_name = ('gameinfo/graphics/font/m5x7.ttf')
-        self.BLACK, self.WHITE = (20,170,245), (255, 255, 255)
         self.main_menu = MainMenu(self)
         self.options = OptionsMenu(self)
         self.credits = CreditsMenu(self)
@@ -36,7 +35,6 @@ class Game:
             self.checking_interaction(player_rect)
             self.execute_dialogue(self)
             self.level.run()
-
 
     def check_events(self):
         for event in pygame.event.get():
@@ -68,7 +66,7 @@ class Game:
                                 self.execute_dialogue(npc)
                                 break
 
-    def checking_interaction(self, player):
+    def checking_interaction(self):
         player_pos = self.level.player.rect.center
         for npc in self.level.visible_sprites:
             if isinstance(npc, NPC1):
@@ -81,7 +79,8 @@ class Game:
                     print(self.execute_dialogue(npc))
                     
     def execute_dialogue(self, npc):
-        print("NPC Dialogue: Hello World!")
+        if npc.interactable:
+            print("NPC Dialogue: Hello World!")
 
     def reset_keys(self):
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY, self.LEFT_KEY, self.RIGHT_KEY = False, False, False, False, False, False
@@ -89,7 +88,7 @@ class Game:
 ################ DA PRA OTIMIZAR ESSA PARTE #################
     def draw_text(self, text,size, x, y ):
         font = pygame.font.Font(UI_FONT,size)
-        text_surface = font.render(text, False, self.WHITE)
+        text_surface = font.render(text, False, 'white')
         text_rect = text_surface.get_rect()
         text_rect.center = (x,y)
         self.display.blit(text_surface,text_rect)
@@ -112,10 +111,10 @@ class Game:
         logo_rect.center = (x,y)
         self.display.blit(logo_surface, logo_rect)
 ################################################################
-
-    def menu_bg(self):
-        menu_bg = pygame.image.load('gameinfo/graphics/cursor/menu_bg.png')
-        self.display.blit(menu_bg, (400,0))
+      
+    #def menu_bg(self):
+    #    menu_bg = pygame.image.load('gameinfo/graphics/cursor/menu_bg.png')
+    #    self.display.blit(menu_bg, (400,0))
 
     def run(self):
         

@@ -21,9 +21,6 @@ class EscapeMenu():
         self.cursor_rectR = pygame.Rect(0, 0, 80, 20)
         self.cursor_rect.midtop = (self.startx + self.offset, self.starty)
         self.cursor_rectR.midtop = (self.startx - self.offsetR, self.starty)
-        self.esc_options = EscapeOptionsMenu()
-        self.esc_controls = EscapeControlsMenu()
-
     
     def display_esc(self):
         self.run_display = True
@@ -165,10 +162,17 @@ class EscapeMenu():
 class EscapeOptionsMenu(EscapeMenu):
     def __init__(self):
         self.state = 'Música'
+        self.mid_w, self.mid_h = WIDTH / 2, HEIGHT / 2
         self.volx, self.voly = self.mid_w, self.mid_h - 100
         self.music_volx, self.music_voly = self.mid_w, self.mid_h -50
         self.sfx_volx, self.sfx_voly = self.mid_w, self.mid_h + 50
         self.controlsx, self.controlsy = self.mid_w, self.mid_h + 150
+        self.offset = - 105
+        self.offsetR = - 185
+        self.music = 0.5
+        self.sfx = 2
+        self.cursor_rect = pygame.Rect(0, 0, 80, 20)
+        self.cursor_rectR = pygame.Rect(0, 0, 80, 20)
 
         #cursor pos
         self.cursor_rect.midtop = (self.music_volx + self.offset, self.music_voly)

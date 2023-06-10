@@ -2,8 +2,6 @@ from typing import Any
 import pygame
 from settings import *
 from support import *
-from entity import Entity
-import math
 
 class NPC1(pygame.sprite.Sprite):
     def __init__(self, position):

@@ -4,7 +4,7 @@ from entity import Entity
 from support import *
 
 class Enemy(Entity):
-	def __init__(self,monster_name,pos,groups,obstacle_sprites,damage_player,trigger_death_particles):
+	def __init__(self,monster_name,pos,groups,obstacle_sprites,damage_player,trigger_death_particles,add_coin):
 
 		# Setup geral
 		super().__init__(groups)
@@ -17,14 +17,14 @@ class Enemy(Entity):
 
 		# Movimento
 		self.rect = self.image.get_rect(topleft = pos)
-		self.hitbox = self.rect.inflate(-5, HITBOX_OFFSET['player'])
+		self.hitbox = self.rect.inflate(0, -10)
 		self.obstacle_sprites = obstacle_sprites
 
 		# Stats
 		self.monster_name = monster_name
 		monster_info = monster_data[self.monster_name]
 		self.health = monster_info['health']
-		self.exp = monster_info['exp']
+		self.coin = monster_info['coin']
 		self.speed = monster_info['speed']
 		self.attack_damage = monster_info['damage']
 		self.resistance = monster_info['resistance']
@@ -46,6 +46,7 @@ class Enemy(Entity):
 		self.attack_cooldown = 400
 		self.damage_player = damage_player
 		self.trigger_death_particles = trigger_death_particles
+		self.add_coin = add_coin
 
 		# Timer de invencibilidade
 		self.vulnerable = True
@@ -110,7 +111,7 @@ class Enemy(Entity):
 		else:
 			self.image.set_alpha(255)
 
-	def cooldown(self):
+	def cooldowns(self):
 		current_time = pygame.time.get_ticks()
 		if not self.can_attack:
 			if current_time - self.attack_time >= self.attack_cooldown:
@@ -135,6 +136,7 @@ class Enemy(Entity):
 		if self.health <= 0:
 			self.kill()
 			self.trigger_death_particles(self.rect.center,self.monster_name)
+			self.add_coin(self.coin)
 			self.death_sound.play()
 
 	def hit_reaction(self):
@@ -145,7 +147,7 @@ class Enemy(Entity):
 		self.hit_reaction()
 		self.move(self.speed)
 		self.animate()
-		self.cooldown()
+		self.cooldowns()
 		self.check_death()
 
 	def enemy_update(self,player):
