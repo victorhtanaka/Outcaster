@@ -9,8 +9,8 @@ class Menu():
         self.run_display = True
         self.cursor_rect = pygame.Rect(0, 0, 80, 20)
         self.cursor_rectR = pygame.Rect(0, 0, 80, 20)
-        self.offset = - 50
-        self.offsetR = - 120
+        self.offset = - 120
+        self.offsetR = - 195
         self.music = 0.5
         self.sfx = 2
 
@@ -25,10 +25,10 @@ class Menu():
         self.enter_s.play()
         
     def draw_cursor(self):
-        self.game.draw_icon(self.cursor_rect.x, self.cursor_rect.y + 5)
+        self.game.draw_icon(self.cursor_rect.x, self.cursor_rect.y)
 
     def draw_cursorR(self):
-        self.game.draw_iconR(self.cursor_rectR.x, self.cursor_rectR.y + 5)
+        self.game.draw_iconR(self.cursor_rectR.x, self.cursor_rectR.y)
 
     def draw_logo(self):
         self.game.menu_logo(WIDTH / 2, HEIGHT / 2 - 150)

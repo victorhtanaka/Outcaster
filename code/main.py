@@ -78,8 +78,7 @@ class Game:
                 if distance < INTERACTION_DISTANCE:
                     print(self.execute_dialogue(npc))
                     
-    def execute_dialogue(self, npc):
-        if npc.interactable:
+    def execute_dialogue(self):
             print("NPC Dialogue: Hello World!")
 
     def reset_keys(self):
