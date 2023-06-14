@@ -66,7 +66,7 @@ class MainMenu(Menu):
             self.game.draw_text("Opções", 35, self.optionsx, self.optionsy)
             self.game.draw_text("Créditos", 35, self.creditsx, self.creditsy)
             self.game.draw_text("Sair", 35, self.sairx, self.sairy)
-            self.game.draw_text("0.1.2", 40, WIDTH / 2 - 700, HEIGHT - 160)
+            self.game.draw_text("0.1.2", 20, WIDTH / 2 - 650, HEIGHT - 20)
             self.draw_cursor()
             self.draw_cursorR()
             self.draw_logo()

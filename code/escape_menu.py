@@ -4,7 +4,7 @@ from settings import *
 class EscapeMenu():
     def __init__(self):
 #####################################################################
-        self.state = "Start"
+        self.state = "Voltar ao Jogo"
         self.display = pygame.display.get_surface()
         self.offset = - 105
         self.offsetR = - 185
@@ -30,8 +30,8 @@ class EscapeMenu():
             self.draw_text("Voltar ao Jogo", 35, self.startx, self.starty)
             self.draw_text("Opções", 35, self.optionsx, self.optionsy)
             self.draw_text("Controles", 35, self.creditsx, self.creditsy)
-            self.draw_text("Voltar ao menu", 35, self.sairx, self.sairy)
-            self.draw_text("0.1.2", 40, WIDTH / 2 - 700, HEIGHT - 160)
+            self.draw_text("Sair", 35, self.sairx, self.sairy)
+            self.draw_text("0.1.2", 20, WIDTH / 2 - 650, HEIGHT - 20)
             self.draw_cursor()
             self.draw_cursorR()
             self.blit_screen()
@@ -107,53 +107,53 @@ class EscapeMenu():
     def move_cursor(self):
         if self.DOWN_KEY:
             self.cursor_sound()
-            if self.state == 'Start':
+            if self.state == 'Voltar ao Jogo':
                 self.cursor_rect.midtop = (self.optionsx + self.offset, self.optionsy )
                 self.cursor_rectR.midtop = (self.optionsx - self.offsetR, self.optionsy )
-                self.state = 'Options'
-            elif self.state == 'Options':
+                self.state = 'Opcoes'
+            elif self.state == 'Opcoes':
                 self.cursor_rect.midtop = (self.creditsx + self.offset, self.creditsy )
                 self.cursor_rectR.midtop = (self.creditsx - self.offsetR, self.creditsy )
-                self.state = 'Credits'
-            elif self.state == 'Credits':
+                self.state = 'Controles'
+            elif self.state == 'Controles':
                 self.cursor_rect.midtop = (self.sairx + self.offset, self.sairy )
                 self.cursor_rectR.midtop = (self.sairx - self.offsetR, self.sairy )
-                self.state = 'Quit'
-            elif self.state == 'Quit':
+                self.state = 'Sair'
+            elif self.state == 'Sair':
                 self.cursor_rect.midtop = (self.startx + self.offset, self.starty )
                 self.cursor_rectR.midtop = (self.startx - self.offsetR, self.starty )
-                self.state = 'Start'
+                self.state = 'Voltar ao Jogo'
 
         elif self.UP_KEY:
             self.cursor_sound()
-            if self.state == 'Start':
+            if self.state == 'Voltar ao Jogo':
                 self.cursor_rect.midtop = (self.sairx + self.offset, self.sairy )
                 self.cursor_rectR.midtop = (self.sairx - self.offsetR, self.sairy )
-                self.state = 'Quit'
-            elif self.state == 'Quit':
+                self.state = 'Sair'
+            elif self.state == 'Sair':
                 self.cursor_rect.midtop = (self.creditsx + self.offset, self.creditsy )
                 self.cursor_rectR.midtop = (self.creditsx - self.offsetR, self.creditsy )
-                self.state = 'Credits'
-            elif self.state == 'Credits':
+                self.state = 'Controles'
+            elif self.state == 'Controles':
                 self.cursor_rect.midtop = (self.optionsx + self.offset, self.optionsy )
                 self.cursor_rectR.midtop = (self.optionsx - self.offsetR, self.optionsy )
-                self.state = 'Options'
-            elif self.state == 'Options':
+                self.state = 'Opcoes'
+            elif self.state == 'Opcoes':
                 self.cursor_rect.midtop = (self.startx + self.offset, self.starty )
                 self.cursor_rectR.midtop = (self.startx - self.offsetR, self.starty )
-                self.state = 'Start'
+                self.state = 'Voltar ao Jogo'
 
     def check_input(self,level):
         self.move_cursor()
         if self.START_KEY:
             self.enter_sound()
-            if self.state == 'Start':
+            if self.state == 'Voltar ao Jogo':
                 pass
-            elif self.state == 'Options':
-                self.curr_menu = self.esc_options
-            elif self.state == 'Credits':
+            elif self.state == 'Opcoes':
+                self.game.curr_menu = self.game.options
+            elif self.state == 'Controles':
                 self.curr_menu = self.esc_controls
-            elif self.state == 'Quit':
+            elif self.state == 'Sair':
                 # fazer verificador para perguntar se o jogador deseja mesmo sair do jogo
                 pygame.quit()
                 sys.exit()
