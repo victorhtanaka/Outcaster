@@ -4,12 +4,14 @@ from level import Level
 from menu import *
 from npc import NPC1
 from escape_menu import *
+import os
      
 class Game:
     def __init__(self):
     
         #setup geral
         pygame.init()
+        os.environ['SDL_VIDEO_CENTERED'] = '1'
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT), flags=pygame.SCALED, vsync=1)
         pygame.display.set_caption('Outcaster')
         self.clock = pygame.time.Clock()
@@ -62,7 +64,7 @@ class Game:
             if isinstance(npc, NPC1):
                 npc.update()
                 if player.colliderect(npc.rect):
-                    if self.G_KEY == True:
+                    if self.G_KEY:
                         self.execute_dialogue(npc)
                     
     def execute_dialogue(self):
