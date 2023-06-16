@@ -108,10 +108,10 @@ class Level():
 
     def create_npc(self):
         npc_position = (2162, 870)
-        npc = NPC1(npc_position)
-        self.visible_sprites.add(npc)
-        self.visible.add(npc)
-        self.obstacle_sprites.add(npc)
+        self.npc = NPC1(npc_position)
+        self.visible_sprites.add(self.npc)
+        self.visible.add(self.npc)
+        self.obstacle_sprites.add(self.npc)
 
     def check_events(self):
         for event in pygame.event.get():
@@ -132,7 +132,6 @@ class Level():
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY = False, False, False, False
 
     def create_attack(self):
-
         self.current_attack = Weapon(self.player, [self.visible_sprites,self.attack_sprites])
 
     def create_magic(self,style,strength,cost):
@@ -192,14 +191,16 @@ class Level():
 
         #Para de atualizar o jogo se inventario ou menu abertos
         if self.inventory_open:
-            self.inventory.display()
+            self.inventory.display_inventory()
         elif self.menu_open:
             self.escape_main_menu.display_esc()
         else:
-            # update and draw the game
-            self.visible_sprites.update()
-            self.visible_sprites.enemy_update(self.player)
-            self.player_attack_logic()
+            if pygame.sprite.collide_rect(self.player, self.npc):
+                print("collision")
+                
+        self.visible_sprites.update()
+        self.visible_sprites.enemy_update(self.player)
+        self.player_attack_logic()
 
 class YSortCameraGroup(pygame.sprite.Group):
     def __init__(self):

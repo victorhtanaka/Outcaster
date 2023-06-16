@@ -34,10 +34,10 @@ class Game:
             self.level.visible.update()
             player_rect = self.level.player.rect
             self.checking_interaction(player_rect)
-            self.execute_dialogue(self)
             self.level.run()
 
     def check_events(self):
+        self.G_KEY = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -55,20 +55,47 @@ class Game:
                     self.LEFT_KEY = True
                 if event.key == pygame.K_RIGHT:
                     self.RIGHT_KEY = True
-                keys = pygame.key.get_pressed()
-                if keys[pygame.K_g]:
+                if event.key == pygame.K_g:
                     self.G_KEY = True
 
-    def checking_interaction(self,player):
+    def checking_interaction(self, player):
         for npc in self.level.visible_sprites:
             if isinstance(npc, NPC1):
                 npc.update()
                 if player.colliderect(npc.rect):
-                    if self.G_KEY:
+                    print("collision")
+                    if self.G_KEY == True:
                         self.execute_dialogue(npc)
                     
-    def execute_dialogue(self):
-            print("NPC Dialogue: Hello World!")
+    def execute_dialogue(self, npc):
+        print("NPC Dialogue: Hello World!")
+        self.draw_speech_bubble(
+            self.screen,  # Use self.screen para desenhar na tela principal
+            "Hello World!",  # Texto do diálogo
+            self.WHITE,  # Cor do texto
+            self.BLACK,  # Cor de fundo do balão
+            (100, 100),  # Posição do balão
+            24  # Tamanho da fonte
+        )
+        pygame.display.update()
+
+    def draw_speech_bubble(self, text, text_colour, bg_colour, pos, size):
+
+        font = pygame.font.pygame.font.SysFont(None, size)
+        text_surface = font.render(text, True, text_colour)
+        text_rect = text_surface.get_rect(midbottom=pos)
+
+        # background
+        bg_rect = text_rect.copy()
+        bg_rect.inflate_ip(10, 10)
+
+        # frame
+        frame_rect = bg_rect.copy()
+        frame_rect.inflate_ip(4, 4)
+
+        pygame.draw.rect(self.screen, text_colour, frame_rect)
+        pygame.draw.rect(self.screen, bg_colour, bg_rect)
+        self.screen.blit(text_surface, text_rect )
 
     def reset_keys(self):
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY, self.LEFT_KEY, self.RIGHT_KEY = False, False, False, False, False, False

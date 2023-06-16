@@ -23,12 +23,6 @@ class EscapeMenu():
         self.cursor_s.set_volume(self.sfx)
         self.cursor_s.play()
 
-    def draw_cursor(self):
-        self.draw_icon(self.cursor_rect.x, self.cursor_rect.y + 2,self.icon_left)
-
-    def draw_cursorR(self):
-        self.draw_icon(self.cursor_rectR.x, self.cursor_rectR.y + 2,self.icon_right)
-
     def blit_screen(self):
         self.display.blit(self.display, (0, 0))
         pygame.display.update()
@@ -41,11 +35,23 @@ class EscapeMenu():
         text_rect.center = (x,y)
         self.display.blit(text_surface,text_rect)
     
-    def draw_icon(self,x,y,icon):
-        icon_surface = pygame.image.load(icon)
+    def draw_icon(self,x,y):
+        icon_surface = pygame.image.load('gameinfo/graphics/cursor/sword_ico_l.png')
         icon_rect = icon_surface.get_rect()
         icon_rect.center = (x,y)
         self.display.blit(icon_surface, icon_rect)
+
+    def draw_iconR(self,x,y):
+        icon_surface = pygame.image.load('gameinfo/graphics/cursor/sword_ico_r.png')
+        icon_rect = icon_surface.get_rect()
+        icon_rect.center = (x,y)
+        self.display.blit(icon_surface, icon_rect)
+    
+    def draw_cursor(self):
+        self.draw_icon(self.cursor_rect.x, self.cursor_rect.y + 2)
+
+    def draw_cursorR(self):
+        self.draw_iconR(self.cursor_rectR.x, self.cursor_rectR.y + 2)
     
     def check_events(self):
         for event in pygame.event.get():

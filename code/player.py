@@ -114,6 +114,9 @@ class Player(Entity):
                     self.magic_index = 0
 
                 self.magic = list(magic_data.keys())[self.magic_index]
+            
+            if keys[pygame.K_g] and self.rect.colliderect(NPC1.npc_rect):
+                print("dialogo")
 
     def get_status(self):
 
