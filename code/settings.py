@@ -42,11 +42,7 @@ UPGRADE_BG_COLOR_SELECTED = '#EEEEEE'
 
 # Armas
 weapon_data = {
-    'sword': {'cooldown': 100, 'damage': 15,'graphic':'gameinfo/graphics/weapons/sword/full.png'},
-    'lance': {'cooldown': 500, 'damage': 30,'graphic':'gameinfo/graphics/weapons/lance/full.png'},
-	'axe': {'cooldown': 300, 'damage': 20, 'graphic':'gameinfo/graphics/weapons/axe/full.png'},
-	'rapier':{'cooldown': 50, 'damage': 8, 'graphic':'gameinfo/graphics/weapons/rapier/full.png'},
-	'sai':{'cooldown': 80, 'damage': 10, 'graphic':'gameinfo/graphics/weapons/sai/full.png'}}
+    'sword': {'cooldown': 100, 'damage': 15,'graphic':'gameinfo/graphics/weapons/sword/full.png'}}
 
 # Mágica
 magic_data = {
@@ -61,4 +57,16 @@ monster_data = {
 	'bamboo': {'health': 70,'coin':120,'damage':6,'attack_type': 'leaf_attack', 'attack_sound':'gameinfo/audio/attack/slash.wav', 'speed': 3, 'resistance': 3, 'attack_radius': 50, 'notice_radius': 300}}
 
 # Inventário
-inventory_data = {'morango': 10,'maça': 2,'banana': 3,'uva': 10}
+inventory_data = {'uva1': 10,'uva2': 2,'uva3': 3,'uva4': 10,'uva5':4,'uva6': 10,'uva7': 2,'uva8': 3,'uva9': 10,'uva10': 4}
+
+# Imagens de itens
+inventory_images = {'uva1':'gameinfo/graphics/items/uva (1).png',
+                    'uva2':'gameinfo/graphics/items/uva (2).png',
+                    'uva3':'gameinfo/graphics/items/uva (3).png',
+                    'uva4':'gameinfo/graphics/items/uva (4).png',
+                    'uva5':'gameinfo/graphics/items/uva (5).png',
+                    'uva6':'gameinfo/graphics/items/uva (6).png',
+                    'uva7':'gameinfo/graphics/items/uva (7).png',
+                    'uva8':'gameinfo/graphics/items/uva (8).png',
+                    'uva9':'gameinfo/graphics/items/uva (9).png',
+                    'uva10':'gameinfo/graphics/items/uva (10).png'}
