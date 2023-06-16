@@ -3,9 +3,7 @@ from settings import *
 from level import Level
 from menu import *
 from npc import NPC1
-import math
 from escape_menu import *
-import player
      
 class Game:
     def __init__(self):
@@ -13,7 +11,7 @@ class Game:
         #setup geral
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT), flags=pygame.SCALED, vsync=1)
-        pygame.display.set_caption('Jogo')
+        pygame.display.set_caption('Outcaster')
         self.clock = pygame.time.Clock()
 
         self.level = Level() 
@@ -24,6 +22,7 @@ class Game:
         self.options = OptionsMenu(self)
         self.credits = CreditsMenu(self)
         self.controls = ControlsMenu(self)
+        self.quit = QuitMenu(self)
         self.curr_menu = self.main_menu
 
     def game_loop(self):
@@ -56,27 +55,15 @@ class Game:
                     self.RIGHT_KEY = True
                 keys = pygame.key.get_pressed()
                 if keys[pygame.K_g]:
-                    player_pos = self.level.player.rect.center
-                    for npc in self.level.visible_sprites:
-                        if isinstance(npc, NPC1) and npc.interactable:
-                            npc_pos = npc.rect.center
-                            player_pos = player.rect.center
-                            distance = math.dist(player_pos, npc_pos)
-                            if distance < INTERACTION_DISTANCE:
-                                self.execute_dialogue(npc)
-                                break
+                    self.G_KEY = True
 
-    def checking_interaction(self):
-        player_pos = self.level.player.rect.center
+    def checking_interaction(self,player):
         for npc in self.level.visible_sprites:
             if isinstance(npc, NPC1):
                 npc.update()
-                npc_pos = npc.rect.center
-                distance = math.dist(player_pos, npc_pos)
-                print(distance)           # pode excluir esse print, é só pra saber a distância certa
-                INTERACTION_DISTANCE = True
-                if distance < INTERACTION_DISTANCE:
-                    print(self.execute_dialogue(npc))
+                if player.colliderect(npc.rect):
+                    if self.G_KEY == True:
+                        self.execute_dialogue(npc)
                     
     def execute_dialogue(self):
             print("NPC Dialogue: Hello World!")
@@ -109,14 +96,8 @@ class Game:
         logo_rect = logo_surface.get_rect()
         logo_rect.center = (x,y)
         self.display.blit(logo_surface, logo_rect)
-################################################################
-      
-    #def menu_bg(self):
-    #    menu_bg = pygame.image.load('gameinfo/graphics/cursor/menu_bg.png')
-    #    self.display.blit(menu_bg, (400,0))
 
     def run(self):
-        
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:

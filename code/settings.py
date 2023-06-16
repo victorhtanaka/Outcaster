@@ -61,4 +61,4 @@ monster_data = {
 	'bamboo': {'health': 70,'coin':120,'damage':6,'attack_type': 'leaf_attack', 'attack_sound':'gameinfo/audio/attack/slash.wav', 'speed': 3, 'resistance': 3, 'attack_radius': 50, 'notice_radius': 300}}
 
 # Inventário
-inventory_data = {'coins': 10,'rock': 2,'diamonds': 3,'gold': 10}
+inventory_data = {'morango': 10,'maça': 2,'banana': 3,'uva': 10}

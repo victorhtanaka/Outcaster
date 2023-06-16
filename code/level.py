@@ -14,11 +14,10 @@ from inventory import Inventory
 from escape_menu import *
 from npc import NPC1
 
-class Level:
+class Level():
     def __init__(self):
         
         # npc
-        self.npc = None
         self.visible = pygame.sprite.Group()
         self.visible_sprites = pygame.sprite.Group()
 
@@ -49,6 +48,7 @@ class Level:
         self.ui = UI()
         self.inventory = Inventory(self.player)
         self.escape_menu = EscapeMenu()
+        self.escape_main_menu = EscapeMainMenu()
 
         # Particulas
         self.animation_player = AnimationPlayer()
@@ -90,7 +90,8 @@ class Level:
 									self.obstacle_sprites,
 									self.create_attack,
 									self.destroy_attack,
-									self.create_magic,)
+									self.create_magic,
+                                    NPC1)
                             else:
                                 if col == '390': monster_name = 'bamboo'
                                 elif col == '391': monster_name = 'spirit'
@@ -112,15 +113,6 @@ class Level:
         self.visible.add(npc)
         self.obstacle_sprites.add(npc)
 
-    def check_interaction(self):
-        for npc in self.visible:
-            if isinstance(npc, NPC1):
-                if npc.hitbox.colliderect(self.player.hitbox):
-                    npc.check_interaction(self.player.hitbox)
-
-    def execute_dialogue(self, npc):
-        print('Hello World')
-
     def check_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -138,13 +130,6 @@ class Level:
 
     def reset_keys(self):
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY = False, False, False, False
-
-    def draw_text(self, text, size, x, y):
-        font = pygame.font.Font(self.font_name,size)
-        text_surface = font.render(text, True, self.WHITE)
-        text_rect = text_surface.get_rect()
-        text_rect.center = (x,y)
-        self.display.blit(text_surface,text_rect)
 
     def create_attack(self):
 
@@ -209,7 +194,7 @@ class Level:
         if self.inventory_open:
             self.inventory.display()
         elif self.menu_open:
-            self.escape_menu.display_esc()
+            self.escape_main_menu.display_esc()
         else:
             # update and draw the game
             self.visible_sprites.update()

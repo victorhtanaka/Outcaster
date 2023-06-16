@@ -2,13 +2,15 @@ import pygame
 from settings import *
 from support import import_folder
 from entity import Entity
+from npc import NPC1
 
 class Player(Entity):
-    def __init__(self,pos,groups,obstacle_sprites,create_attack,destroy_attack,create_magic):
+    def __init__(self,pos,groups,obstacle_sprites,create_attack,destroy_attack,create_magic,npc):
         super().__init__(groups)
         self.image = pygame.image.load('gameinfo/graphics/player/down/down_0.png').convert_alpha()
         self.rect = self.image.get_rect(topleft=pos)
         self.hitbox = self.rect.inflate(-6,HITBOX_OFFSET['player'])
+        self.npc = npc
 
         # IMPORTAR PLAYER ASSETS
         self.import_player_assets()
