@@ -3,6 +3,7 @@ from settings import *
 from support import import_folder
 from entity import Entity
 from npc import NPC1
+from dialogue_box import DialogueBox
 
 class Player(Entity):
     def __init__(self,pos,groups,obstacle_sprites,create_attack,destroy_attack,create_magic,npc):
@@ -11,6 +12,7 @@ class Player(Entity):
         self.rect = self.image.get_rect(topleft=pos)
         self.hitbox = self.rect.inflate(-6,HITBOX_OFFSET['player'])
         self.npc = npc
+        self.dialogue_box = DialogueBox()
 
         # IMPORTAR PLAYER ASSETS
         self.import_player_assets()
@@ -45,6 +47,7 @@ class Player(Entity):
         self.energy = self.stats['energy'] 
         self.coin = 200
         self.speed = self.stats['speed']
+        self.talking = False
 
         # damage timer
         self.vulnerable = True
@@ -66,7 +69,7 @@ class Player(Entity):
             self.animations[animation] = import_folder(full_path)
 
     def input(self):
-        if not self.attacking:
+        if not self.attacking and not self.talking:
             keys = pygame.key.get_pressed()
 
             # Input de Movimento
@@ -104,6 +107,7 @@ class Player(Entity):
                 cost = list(magic_data.values())[self.magic_index]['cost']
                 self.create_magic(style,strength,cost)
             
+            # Input de diálogo
             if keys[pygame.K_e] and self.can_switch_magic:
                 self.can_switch_magic = False
                 self.magic_switch_time = pygame.time.get_ticks()
@@ -116,6 +120,8 @@ class Player(Entity):
                 self.magic = list(magic_data.keys())[self.magic_index]
             
             if keys[pygame.K_g] and self.rect.colliderect(NPC1.npc_rect):
+                self.talking = True
+                self.dialogue_box
                 print("dialogo")
 
     def get_status(self):

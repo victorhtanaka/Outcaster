@@ -11,7 +11,7 @@ class Game:
     
         #setup geral
         pygame.init()
-        os.environ['SDL_VIDEO_CENTERED'] = '1'
+        #os.environ['SDL_VIDEO_CENTERED'] = '1'
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT), flags=pygame.SCALED, vsync=1)
         pygame.display.set_caption('Outcaster')
         self.clock = pygame.time.Clock()
@@ -32,8 +32,8 @@ class Game:
             g.run()
             self.check_events()
             self.level.visible.update()
-            player_rect = self.level.player.rect
-            self.checking_interaction(player_rect)
+            #player_rect = self.level.player.rect
+            #self.checking_interaction(player_rect)
             self.level.run()
 
     def check_events(self):
@@ -58,49 +58,30 @@ class Game:
                 if event.key == pygame.K_g:
                     self.G_KEY = True
 
-    def checking_interaction(self, player):
-        for npc in self.level.visible_sprites:
-            if isinstance(npc, NPC1):
-                npc.update()
-                if player.colliderect(npc.rect):
-                    print("collision")
-                    if self.G_KEY == True:
-                        self.execute_dialogue(npc)
+    #def checking_interaction(self, player):
+    #    for npc in self.level.visible_sprites:
+    #        if isinstance(npc, NPC1):
+    #            npc.update()
+    #            if player.colliderect(npc.rect):
+    #                print("collision")
+    #                if self.G_KEY == True:
+    #                    self.execute_dialogue(npc)
                     
-    def execute_dialogue(self, npc):
-        print("NPC Dialogue: Hello World!")
-        self.draw_speech_bubble(
-            self.screen,  # Use self.screen para desenhar na tela principal
-            "Hello World!",  # Texto do diálogo
-            self.WHITE,  # Cor do texto
-            self.BLACK,  # Cor de fundo do balão
-            (100, 100),  # Posição do balão
-            24  # Tamanho da fonte
-        )
-        pygame.display.update()
-
-    def draw_speech_bubble(self, text, text_colour, bg_colour, pos, size):
-
-        font = pygame.font.pygame.font.SysFont(None, size)
-        text_surface = font.render(text, True, text_colour)
-        text_rect = text_surface.get_rect(midbottom=pos)
-
-        # background
-        bg_rect = text_rect.copy()
-        bg_rect.inflate_ip(10, 10)
-
-        # frame
-        frame_rect = bg_rect.copy()
-        frame_rect.inflate_ip(4, 4)
-
-        pygame.draw.rect(self.screen, text_colour, frame_rect)
-        pygame.draw.rect(self.screen, bg_colour, bg_rect)
-        self.screen.blit(text_surface, text_rect )
+    #def execute_dialogue(self, npc):
+        #print("NPC Dialogue: Hello World!")
+        #self.draw_speech_bubble(
+        #    self.screen,  # Use self.screen para desenhar na tela principal
+        #    "Hello World!",  # Texto do diálogo
+        #    self.WHITE,  # Cor do texto
+        #    self.BLACK,  # Cor de fundo do balão
+        #    (100, 100),  # Posição do balão
+        #    24  # Tamanho da fonte
+        #)
+        #pygame.display.update()
 
     def reset_keys(self):
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY, self.LEFT_KEY, self.RIGHT_KEY = False, False, False, False, False, False
 
-################ DA PRA OTIMIZAR ESSA PARTE #################
     def draw_text(self, text,size, x, y ):
         font = pygame.font.Font(UI_FONT,size)
         text_surface = font.render(text, False, 'white')
@@ -108,23 +89,15 @@ class Game:
         text_rect.center = (x,y)
         self.display.blit(text_surface,text_rect)
     
-    def draw_icon(self,x,y):
-        icon_surface = pygame.image.load('gameinfo/graphics/cursor/sword_ico_l.png')
-        icon_rect = icon_surface.get_rect()
-        icon_rect.center = (x,y)
-        self.display.blit(icon_surface, icon_rect)
-
-    def draw_iconR(self,x,y):
-        icon_surface = pygame.image.load('gameinfo/graphics/cursor/sword_ico_r.png')
+    def draw_icon(self,x,y,image):
+        icon_surface = pygame.image.load(image).convert_alpha()
         icon_rect = icon_surface.get_rect()
         icon_rect.center = (x,y)
         self.display.blit(icon_surface, icon_rect)
     
-    def menu_logo(self,x,y):
-        logo_surface = pygame.image.load('gameinfo/graphics/logo/menu_logo.png')
-        logo_rect = logo_surface.get_rect()
-        logo_rect.center = (x,y)
-        self.display.blit(logo_surface, logo_rect)
+    def draw_bg(self,image):
+        icon_surface = pygame.image.load(image)
+        self.display.blit(icon_surface, [0,0])
 
     def run(self):
         while True:

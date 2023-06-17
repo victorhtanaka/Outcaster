@@ -15,8 +15,6 @@ class EscapeMenu():
         self.menu_enter_sound = 'gameinfo/audio/confirm_ui.wav'
         self.menu_cursor_sound = 'gameinfo/audio/back_ui.wav'
         self.menu_config_sound = 'gameinfo/audio/change_ui.wav'
-        self.icon_left = 'gameinfo/graphics/cursor/sword_ico_l.png'
-        self.icon_right = 'gameinfo/graphics/cursor/sword_ico_r.png'
     
     def menu_button_sound(self,sound):
         self.cursor_s = pygame.mixer.Sound(sound)
@@ -36,13 +34,13 @@ class EscapeMenu():
         self.display.blit(text_surface,text_rect)
     
     def draw_icon(self,x,y):
-        icon_surface = pygame.image.load('gameinfo/graphics/cursor/sword_ico_l.png')
+        icon_surface = pygame.image.load('gameinfo/graphics/ui/cursor.png')
         icon_rect = icon_surface.get_rect()
         icon_rect.center = (x,y)
         self.display.blit(icon_surface, icon_rect)
 
     def draw_iconR(self,x,y):
-        icon_surface = pygame.image.load('gameinfo/graphics/cursor/sword_ico_r.png')
+        icon_surface = pygame.image.load('gameinfo/graphics/ui/cursor.png')
         icon_rect = icon_surface.get_rect()
         icon_rect.center = (x,y)
         self.display.blit(icon_surface, icon_rect)

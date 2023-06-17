@@ -1,4 +1,2 @@
-# CHGAME
-hello guys
-today were going to show you how to download photoshop for free
-banana meteoro cow
+# Me leia
+Executar o arquivo main para rodar o jogo

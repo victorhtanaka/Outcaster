@@ -23,13 +23,13 @@ class Menu():
         self.cursor_s.play()
 
     def draw_cursor(self):
-        self.game.draw_icon(self.cursor_rect.x, self.cursor_rect.y)
+        self.game.draw_icon(self.cursor_rect.x, self.cursor_rect.y,'gameinfo/graphics/ui/cursor.png')
 
     def draw_cursorR(self):
-        self.game.draw_iconR(self.cursor_rectR.x, self.cursor_rectR.y)
-
-    def draw_logo(self):
-        self.game.menu_logo(WIDTH / 2, HEIGHT / 2 - 150)
+        self.game.draw_icon(self.cursor_rectR.x, self.cursor_rectR.y,'gameinfo/graphics/ui/cursor.png')
+    
+    def draw_background(self,bg):
+        self.game.draw_bg(bg)
 
     def blit_screen(self):
         self.game.screen.blit(self.game.display, (0, 0))
@@ -57,15 +57,14 @@ class MainMenu(Menu):
         while self.run_display:
             self.game.check_events()
             self.check_input()
-            self.game.display.fill('black')
+            self.draw_background('gameinfo/graphics/ui/main_menu.png')
             self.game.draw_text("Começar o jogo", 35, self.startx, self.starty)
             self.game.draw_text("Opções", 35, self.optionsx, self.optionsy)
             self.game.draw_text("Créditos", 35, self.creditsx, self.creditsy)
-            self.game.draw_text("Sair", 35, self.sairx, self.sairy)
+            self.game.draw_text("Sair do Jogo", 35, self.sairx, self.sairy)
             self.game.draw_text("V0.1.2", 20, WIDTH / 2 - 700, HEIGHT/ 2 + 400)
             self.draw_cursor()
             self.draw_cursorR()
-            self.draw_logo()
             self.blit_screen()
 
     def move_cursor(self):
@@ -149,7 +148,7 @@ class QuitMenu(Menu):
         while self.run_display:
             self.game.check_events()
             self.check_input()
-            self.game.display.fill('black')
+            self.draw_background('gameinfo/graphics/ui/main_menu.png')
             self.game.draw_text("Desejar sair do jogo?", 35, self.startx, self.starty)
             self.game.draw_text("Sim", 35, self.optionsx, self.optionsy)
             self.game.draw_text("Não", 35, self.creditsx, self.creditsy)
@@ -205,8 +204,7 @@ class OptionsMenu(Menu):
             self.ast_s = "*" * (int(self.sfx))
             self.game.check_events()
             self.check_input()
-            self.game.display.fill('black')
-            self.game.draw_text('Opções', 45, WIDTH / 2, HEIGHT / 2 - 200)
+            self.draw_background('gameinfo/graphics/ui/options.png')
             self.game.draw_text("Volume", 45, WIDTH / 2, HEIGHT / 2 - 100)
             self.game.draw_text("Música", 35, self.music_volx, self.music_voly)
             self.game.draw_text(f"{self.music} {self.ast_m}", 30, self.volx, self.voly + 85)
@@ -300,13 +298,13 @@ class ControlsMenu(Menu):
     def display_menu(self):
         self.run_display = True
         while self.run_display:
+            self.draw_background('gameinfo/graphics/ui/keybinds.png')
+            self.game.draw_text('Créditos', 40, WIDTH / 2, HEIGHT / 2 - 200)
+            self.game.draw_text('Design de Interface:', 40, WIDTH / 2, HEIGHT / 2 - 120)
+            self.game.draw_text('Yan Ferreira', 35, WIDTH / 2, HEIGHT / 2 - 50)
             self.game.check_events()
             if self.game.BACK_KEY:
                 self.menu_button_sound(self.menu_enter_sound)
                 self.game.curr_menu = self.game.options
                 self.run_display = False
-            self.game.display.fill('black')
-            self.game.draw_text('Créditos', 40, WIDTH / 2, HEIGHT / 2 - 200)
-            self.game.draw_text('Design de Interface:', 40, WIDTH / 2, HEIGHT / 2 - 120)
-            self.game.draw_text('Yan Ferreira', 35, WIDTH / 2, HEIGHT / 2 - 50)
             self.blit_screen()
