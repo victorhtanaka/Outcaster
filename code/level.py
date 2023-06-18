@@ -193,7 +193,7 @@ class Level():
         if self.inventory_open:
             self.inventory.display_inventory()
         elif self.menu_open:
-            self.escape_main_menu.display_esc()
+            self.menu_open = self.escape_main_menu.display_esc()
         else:
             if pygame.sprite.collide_rect(self.player, self.npc):
                 print("collision")

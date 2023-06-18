@@ -11,7 +11,7 @@ class Menu():
         self.cursor_rectR = pygame.Rect(0, 0, 80, 20)
         self.offset = - 120
         self.offsetR = - 195
-        self.music = 0.5
+        self.music = 2
         self.sfx = 2
         self.menu_enter_sound = 'gameinfo/audio/confirm_ui.wav'
         self.menu_cursor_sound = 'gameinfo/audio/back_ui.wav'
@@ -19,7 +19,7 @@ class Menu():
 
     def menu_button_sound(self,sound):
         self.cursor_s = pygame.mixer.Sound(sound)
-        self.cursor_s.set_volume(self.sfx)
+        self.cursor_s.set_volume(self.sfx / 10)
         self.cursor_s.play()
 
     def draw_cursor(self):
@@ -46,7 +46,7 @@ class MainMenu(Menu):
         self.sairx, self.sairy = self.mid_w, self.mid_h + 200
 
         self.title_sound = pygame.mixer.Sound('gameinfo/audio/Menu_Music.wav')
-        self.title_sound.set_volume(self.music)
+        self.title_sound.set_volume(self.music / 20)
         self.title_sound.play(loops = -1)
         
         self.cursor_rect.midtop = (self.startx + self.offset, self.starty)
@@ -62,7 +62,7 @@ class MainMenu(Menu):
             self.game.draw_text("Opções", 35, self.optionsx, self.optionsy)
             self.game.draw_text("Créditos", 35, self.creditsx, self.creditsy)
             self.game.draw_text("Sair do Jogo", 35, self.sairx, self.sairy)
-            self.game.draw_text("V0.1.2", 20, WIDTH / 2 - 700, HEIGHT/ 2 + 400)
+            self.game.draw_text("V0.1.2", 20, WIDTH / 2 - 640, HEIGHT/ 2 + 360)
             self.draw_cursor()
             self.draw_cursorR()
             self.blit_screen()
@@ -247,20 +247,22 @@ class OptionsMenu(Menu):
 
         # mudar barra de som
         elif self.game.LEFT_KEY:
-            self.menu_button_sound(self.menu_config_sound)
             if self.state == 'Música':
                 if self.music != 0:
+                    self.menu_button_sound(self.menu_config_sound)
                     self.music -= 1
             elif self.state == 'SFX':
                 if self.sfx != 0:
+                    self.menu_button_sound(self.menu_config_sound)
                     self.sfx -= 1
         elif self.game.RIGHT_KEY:
-            self.menu_button_sound(self.menu_config_sound)
             if self.state == 'Música':
                 if self.music != 10:
+                    self.menu_button_sound(self.menu_config_sound)
                     self.music += 1
             elif self.state == 'SFX':
                 if self.sfx != 10:
+                    self.menu_button_sound(self.menu_config_sound)
                     self.sfx += 1
     
     def check_input(self):
