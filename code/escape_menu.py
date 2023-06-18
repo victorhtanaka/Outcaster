@@ -73,6 +73,13 @@ class EscapeMenu():
     def reset_keys(self):
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY, self.LEFT_KEY, self.RIGHT_KEY = False, False, False, False, False, False
 
+    def draw_bg(self,image):
+        icon_surface = pygame.image.load(image)
+        self.display.blit(icon_surface, [0,0])
+
+    def draw_background(self,bg):
+        self.draw_bg(bg)
+
 class EscapeMainMenu(EscapeMenu):
     def __init__(self):
         EscapeMenu.__init__(self)
@@ -89,7 +96,7 @@ class EscapeMainMenu(EscapeMenu):
         while self.run_display:
             self.check_events()
             self.check_input()
-            self.display.fill('black')
+            self.draw_background('gameinfo/graphics/ui/escape.png')
             self.draw_text("Voltar ao Jogo", 35, self.startx, self.starty)
             self.draw_text("Opções", 35, self.optionsx, self.optionsy)
             self.draw_text("Sair", 35, self.sairx, self.sairy)
