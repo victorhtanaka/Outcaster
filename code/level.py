@@ -58,12 +58,10 @@ class Level():
         layouts = {
             'boundary': import_csv_layout('gameinfo/map/map_FloorBlocks.csv'),
             'grass': import_csv_layout('gameinfo/map/map_Grass.csv'),
-            'object': import_csv_layout('gameinfo/map/map_Objects.csv'),
             'entities': import_csv_layout('gameinfo/map/map_Entities.csv')
         }
         graphics = {
-            'grass': import_folder('gameinfo/graphics/Grass'),
-            'objects': import_folder('gameinfo/graphics/objects')
+            'grass': import_folder('gameinfo/graphics/Grass')
         }
         
         for style, layout in layouts.items():
