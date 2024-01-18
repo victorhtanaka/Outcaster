@@ -41,7 +41,7 @@ class Player(Entity):
         self.magic_switch_time = None
 
         # Stats
-        self.stats = {'health': 100, 'energy': 60, 'attack': 10, 'magic': 4, 'speed': 6}
+        self.stats = {'health': 100, 'energy': 60, 'attack': 10, 'magic': 12, 'speed': 6}
         self.inventory_data = {'coins': 10,'rock': 2,'diamonds': 3,'gold': 10}
         self.health = self.stats['health'] 
         self.energy = self.stats['energy'] 

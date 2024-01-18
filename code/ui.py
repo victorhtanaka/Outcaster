@@ -9,8 +9,8 @@ class UI:
         self.font = pygame.font.Font(UI_FONT_THIN,UI_FONT_SIZE_THIN)
 
         #SETUP DA BARRA DE COISAS
-        self.health_bar_rect = pygame.Rect(10,10,HEALTH_BAR_WIDTH,BAR_HEIGHT)
-        self.energy_bar_rect = pygame.Rect(10,34,ENERGY_BAR_WIDTH,BAR_HEIGHT)
+        self.health_bar_rect = pygame.Rect(300,180,HEALTH_BAR_WIDTH,BAR_HEIGHT)
+        self.energy_bar_rect = pygame.Rect(300,204,ENERGY_BAR_WIDTH,BAR_HEIGHT)
 
         # convert weapon dictionary
 		#self.weapon_graphics = []
@@ -43,14 +43,14 @@ class UI:
         text_surf = self.font.render(str(int(coin)),False,TEXT_COLOR)
         x = self.display_surface.get_size()[0] - 20
         y = self.display_surface.get_size()[1] - 20
-        text_rect = text_surf.get_rect(bottomright = (x,y))
+        text_rect = text_surf.get_rect(center = (1590,880))
 
         pygame.draw.rect(self.display_surface,UI_BG_COLOR,text_rect.inflate(20,20))
         self.display_surface.blit(text_surf,text_rect)
         pygame.draw.rect(self.display_surface,UI_BORDER_COLOR,text_rect.inflate(20,20),3)
 
     def selection_box(self,left,top, has_switched):
-        bg_rect = pygame.Rect(left,top,ITEM_BOX_SIZE,ITEM_BOX_SIZE)
+        bg_rect = pygame.Rect(300,825,ITEM_BOX_SIZE,ITEM_BOX_SIZE)
         pygame.draw.rect(self.display_surface,UI_BG_COLOR,bg_rect)
         if has_switched:
             pygame.draw.rect(self.display_surface,UI_BORDER_COLOR_ACTIVE,bg_rect,3)

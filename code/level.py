@@ -13,10 +13,13 @@ from magic import MagicPlayer
 from inventory import Inventory
 from escape_menu import *
 from npc import NPC1
+from death_screen import *
 
 class Level():
     def __init__(self):
-        
+
+        self.display = pygame.display.get_surface()
+
         # npc
         self.visible = pygame.sprite.Group()
         self.visible_sprites = pygame.sprite.Group()
@@ -49,19 +52,31 @@ class Level():
         self.inventory = Inventory(self.player)
         self.escape_menu = EscapeMenu()
         self.escape_main_menu = EscapeMainMenu()
+        self.death_screen = DeathScreenOp()
 
         # Particulas
         self.animation_player = AnimationPlayer()
         self.magic_player = MagicPlayer(self.animation_player)
 
+        
+
+    def draw_bg(self,image):
+        icon_surface = pygame.image.load(image)
+        self.display.blit(icon_surface, [0,0])
+
+    def draw_background(self,bg):
+        self.draw_bg(bg)    
+
     def create_map(self):
         layouts = {
             'boundary': import_csv_layout('gameinfo/map/map_FloorBlocks.csv'),
             'grass': import_csv_layout('gameinfo/map/map_Grass.csv'),
+            'object': import_csv_layout('gameinfo/map/map_Objects.csv'),
             'entities': import_csv_layout('gameinfo/map/map_Entities.csv')
         }
         graphics = {
-            'grass': import_folder('gameinfo/graphics/Grass')
+            'grass': import_folder('gameinfo/graphics/Grass'),
+            'objects': import_folder('gameinfo/graphics/objects')
         }
         
         for style, layout in layouts.items():
@@ -161,7 +176,10 @@ class Level():
 
     def damage_player(self,amount,attack_type):
         if self.player.vulnerable:
-            self.player.health -= amount
+            if self.player.health > 0:
+                self.player.health -= amount
+            else:
+                self.player.health = 0
             self.player.vulnerable = False
             self.player.hurt_time = pygame.time.get_ticks()
 			# spawn particles
@@ -192,10 +210,11 @@ class Level():
             self.inventory.display_inventory()
         elif self.menu_open:
             self.menu_open = self.escape_main_menu.display_esc()
+        elif self.player.health == 0:
+            self.death_screen.display_esc()
         else:
             if pygame.sprite.collide_rect(self.player, self.npc):
                 print("collision")
-                
         self.visible_sprites.update()
         self.visible_sprites.enemy_update(self.player)
         self.player_attack_logic()

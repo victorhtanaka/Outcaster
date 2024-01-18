@@ -322,3 +322,4 @@ class EscapeControlsMenu(EscapeMenu):
                 self.run_display = False
             self.draw_background('gameinfo/graphics/ui/keybinds.png')
             self.blit_screen()
+            self.blit_screen()

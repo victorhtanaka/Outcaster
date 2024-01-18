@@ -8,11 +8,11 @@ class Menu():
         self.mid_w, self.mid_h = WIDTH / 2, HEIGHT / 2
         self.run_display = True
         self.cursor_rect = pygame.Rect(0, 0, 80, 20)
-        self.cursor_rectR = pygame.Rect(0, 0, 80, 20)
+        #self.cursor_rectR = pygame.Rect(0, 0, 80, 20)
         self.offset = - 120
         self.offsetR = - 195
-        self.music = 2
-        self.sfx = 2
+        self.music = 4
+        self.sfx = 4
         self.menu_enter_sound = 'gameinfo/audio/confirm_ui.wav'
         self.menu_cursor_sound = 'gameinfo/audio/back_ui.wav'
         self.menu_config_sound = 'gameinfo/audio/change_ui.wav'
@@ -25,8 +25,8 @@ class Menu():
     def draw_cursor(self):
         self.game.draw_icon(self.cursor_rect.x, self.cursor_rect.y,'gameinfo/graphics/ui/cursor.png')
 
-    def draw_cursorR(self):
-        self.game.draw_icon(self.cursor_rectR.x, self.cursor_rectR.y,'gameinfo/graphics/ui/cursor.png')
+    #def draw_cursorR(self):
+    #    self.game.draw_icon(self.cursor_rectR.x, self.cursor_rectR.y,'gameinfo/graphics/ui/cursor.png')
     
     def draw_background(self,bg):
         self.game.draw_bg(bg)
@@ -45,12 +45,12 @@ class MainMenu(Menu):
         self.creditsx, self.creditsy = self.mid_w, self.mid_h + 150
         self.sairx, self.sairy = self.mid_w, self.mid_h + 200
 
-        self.title_sound = pygame.mixer.Sound('gameinfo/audio/Menu_Music.wav')
+        self.title_sound = pygame.mixer.Sound('gameinfo/audio/Panacea.ogg')
         self.title_sound.set_volume(self.music / 20)
         self.title_sound.play(loops = -1)
         
         self.cursor_rect.midtop = (self.startx + self.offset, self.starty)
-        self.cursor_rectR.midtop = (self.startx - self.offsetR, self.starty)
+        self.cursor_rect.midtop = (self.startx - self.offsetR, self.starty)
 
     def display_menu(self):
         self.run_display = True
@@ -64,7 +64,8 @@ class MainMenu(Menu):
             self.game.draw_text("Sair do Jogo", 35, self.sairx, self.sairy)
             self.game.draw_text("V0.1.2", 20, WIDTH / 2 - 640, HEIGHT/ 2 + 360)
             self.draw_cursor()
-            self.draw_cursorR()
+            self.draw_cursor()
+            #self.draw_cursorR()
             self.blit_screen()
 
     def move_cursor(self):
@@ -72,49 +73,49 @@ class MainMenu(Menu):
             self.menu_button_sound(self.menu_cursor_sound)
             if self.state == 'Start':
                 self.cursor_rect.midtop = (self.optionsx + self.offset, self.optionsy )
-                self.cursor_rectR.midtop = (self.optionsx - self.offsetR, self.optionsy )
+                self.cursor_rect.midtop = (self.optionsx - self.offsetR, self.optionsy )
                 self.state = 'Options'
             elif self.state == 'Options':
                 self.cursor_rect.midtop = (self.creditsx + self.offset, self.creditsy )
-                self.cursor_rectR.midtop = (self.creditsx - self.offsetR, self.creditsy )
+                self.cursor_rect.midtop = (self.creditsx - self.offsetR, self.creditsy )
                 self.state = 'Credits'
             elif self.state == 'Credits':
                 self.cursor_rect.midtop = (self.sairx + self.offset, self.sairy )
-                self.cursor_rectR.midtop = (self.sairx - self.offsetR, self.sairy )
+                self.cursor_rect.midtop = (self.sairx - self.offsetR, self.sairy )
                 self.state = 'Quit'
             elif self.state == 'Quit':
                 self.cursor_rect.midtop = (self.startx + self.offset, self.starty )
-                self.cursor_rectR.midtop = (self.startx - self.offsetR, self.starty )
+                self.cursor_rect.midtop = (self.startx - self.offsetR, self.starty )
                 self.state = 'Start'
 
         elif self.game.UP_KEY:
             self.menu_button_sound(self.menu_cursor_sound)
             if self.state == 'Start':
                 self.cursor_rect.midtop = (self.sairx + self.offset, self.sairy )
-                self.cursor_rectR.midtop = (self.sairx - self.offsetR, self.sairy )
+                self.cursor_rect.midtop = (self.sairx - self.offsetR, self.sairy )
                 self.state = 'Quit'
             elif self.state == 'Quit':
                 self.cursor_rect.midtop = (self.creditsx + self.offset, self.creditsy )
-                self.cursor_rectR.midtop = (self.creditsx - self.offsetR, self.creditsy )
+                self.cursor_rect.midtop = (self.creditsx - self.offsetR, self.creditsy )
                 self.state = 'Credits'
             elif self.state == 'Credits':
                 self.cursor_rect.midtop = (self.optionsx + self.offset, self.optionsy )
-                self.cursor_rectR.midtop = (self.optionsx - self.offsetR, self.optionsy )
+                self.cursor_rect.midtop = (self.optionsx - self.offsetR, self.optionsy )
                 self.state = 'Options'
             elif self.state == 'Options':
                 self.cursor_rect.midtop = (self.startx + self.offset, self.starty )
-                self.cursor_rectR.midtop = (self.startx - self.offsetR, self.starty )
+                self.cursor_rect.midtop = (self.startx - self.offsetR, self.starty )
                 self.state = 'Start'
 
         if self.game.LEFT_KEY:
             self.menu_button_sound(self.menu_cursor_sound)
             if self.state == 'Sim':
                 self.cursor_rect.midtop = (self.sairx + self.offset, self.sairy )
-                self.cursor_rectR.midtop = (self.sairx - self.offsetR, self.sairy )
+                self.cursor_rect.midtop = (self.sairx - self.offsetR, self.sairy )
                 self.state = 'Não'
             elif self.state == 'Não':
                 self.cursor_rect.midtop = (self.creditsx + self.offset, self.creditsy )
-                self.cursor_rectR.midtop = (self.creditsx - self.offsetR, self.creditsy )
+                self.cursor_rect.midtop = (self.creditsx - self.offsetR, self.creditsy )
                 self.state = 'Sim'
 
     def check_input(self):
@@ -141,7 +142,7 @@ class QuitMenu(Menu):
         self.creditsx, self.creditsy = self.mid_w + 100, self.mid_h + 100
         
         self.cursor_rect.midtop = (self.creditsx + self.offset + 80, self.creditsy)
-        self.cursor_rectR.midtop = (self.creditsx - self.offsetR - 80, self.creditsy)
+        self.cursor_rect.midtop = (self.creditsx - self.offsetR - 80, self.creditsy)
 
     def display_menu(self):
         self.run_display = True
@@ -153,7 +154,8 @@ class QuitMenu(Menu):
             self.game.draw_text("Sim", 35, self.optionsx, self.optionsy)
             self.game.draw_text("Não", 35, self.creditsx, self.creditsy)
             self.draw_cursor()
-            self.draw_cursorR()
+            self.draw_cursor()
+            #self.draw_cursorR()
             self.blit_screen()
         
     def move_cursor(self):
@@ -161,11 +163,11 @@ class QuitMenu(Menu):
             self.menu_button_sound(self.menu_cursor_sound)
             if self.state == 'Não':
                 self.cursor_rect.midtop = (self.optionsx + self.offset+80, self.optionsy )
-                self.cursor_rectR.midtop = (self.optionsx - self.offsetR-80, self.optionsy )
+                self.cursor_rect.midtop = (self.optionsx - self.offsetR-80, self.optionsy )
                 self.state = 'Sim'
             elif self.state == 'Sim':
                 self.cursor_rect.midtop = (self.creditsx + self.offset+80, self.creditsy )
-                self.cursor_rectR.midtop = (self.creditsx - self.offsetR-80, self.creditsy )
+                self.cursor_rect.midtop = (self.creditsx - self.offsetR-80, self.creditsy )
                 self.state = 'Não'
 
     def check_input(self):
@@ -190,7 +192,7 @@ class OptionsMenu(Menu):
 
         #cursor pos
         self.cursor_rect.midtop = (self.music_volx + self.offset, self.music_voly)
-        self.cursor_rectR.midtop = (self.music_volx - self.offsetR, self.music_voly)
+        self.cursor_rect.midtop = (self.music_volx - self.offsetR, self.music_voly)
 
     def display_menu(self):
         self.run_display = True
@@ -212,7 +214,8 @@ class OptionsMenu(Menu):
             self.game.draw_text(f"{self.sfx} {self.ast_s}", 30, self.volx, self.voly + 185)
             self.game.draw_text('Controles', 35, self.controlsx, self.controlsy)
             self.draw_cursor()
-            self.draw_cursorR() 
+            self.draw_cursor()
+            #self.draw_cursorR() 
             self.blit_screen()
 
     def move_cursor(self):
@@ -220,29 +223,29 @@ class OptionsMenu(Menu):
             self.menu_button_sound(self.menu_cursor_sound)
             if self.state == 'Música':
                 self.cursor_rect.midtop = (self.sfx_volx + self.offset, self.sfx_voly )
-                self.cursor_rectR.midtop = (self.sfx_volx - self.offsetR, self.sfx_voly )
+                self.cursor_rect.midtop = (self.sfx_volx - self.offsetR, self.sfx_voly )
                 self.state = 'SFX'
             elif self.state == 'SFX':
                 self.cursor_rect.midtop = (self.controlsx + self.offset, self.controlsy )
-                self.cursor_rectR.midtop = (self.controlsx - self.offsetR, self.controlsy )
+                self.cursor_rect.midtop = (self.controlsx - self.offsetR, self.controlsy )
                 self.state = 'Controles'
             elif self.state == 'Controles':
                 self.cursor_rect.midtop = (self.music_volx + self.offset, self.music_voly )
-                self.cursor_rectR.midtop = (self.music_volx - self.offsetR, self.music_voly )
+                self.cursor_rect.midtop = (self.music_volx - self.offsetR, self.music_voly )
                 self.state = 'Música'
         elif self.game.UP_KEY:
             self.menu_button_sound(self.menu_cursor_sound)
             if self.state == 'Música':
                 self.cursor_rect.midtop = (self.controlsx + self.offset, self.controlsy )
-                self.cursor_rectR.midtop = (self.controlsx - self.offsetR, self.controlsy )
+                self.cursor_rect.midtop = (self.controlsx - self.offsetR, self.controlsy )
                 self.state = 'Controles'
             elif self.state == 'SFX':
                 self.cursor_rect.midtop = (self.music_volx + self.offset, self.music_voly )
-                self.cursor_rectR.midtop = (self.music_volx - self.offsetR, self.music_voly )
+                self.cursor_rect.midtop = (self.music_volx - self.offsetR, self.music_voly )
                 self.state = 'Música'
             elif self.state == 'Controles':
                 self.cursor_rect.midtop = (self.sfx_volx + self.offset, self.sfx_voly )
-                self.cursor_rectR.midtop = (self.sfx_volx - self.offsetR, self.sfx_voly )
+                self.cursor_rect.midtop = (self.sfx_volx - self.offsetR, self.sfx_voly )
                 self.state = 'SFX'
 
         # mudar barra de som
@@ -287,8 +290,11 @@ class CreditsMenu(Menu):
                 self.game.curr_menu = self.game.main_menu
                 self.run_display = False
             self.draw_background('gameinfo/graphics/ui/credits.png')
-            self.game.draw_text('Design de Interface:', 40, WIDTH / 2, HEIGHT / 2 - 120)
-            self.game.draw_text('Yan Ferreira', 35, WIDTH / 2, HEIGHT / 2 - 50)
+            self.game.draw_text('Victor Hideyuki Tanaka', 35, WIDTH / 2, HEIGHT / 2 - 120)
+            self.game.draw_text('Yan Ferreira David', 35, WIDTH / 2, HEIGHT / 2 - 70)
+            self.game.draw_text('Matheus Machado Pereira', 35, WIDTH / 2, HEIGHT / 2 - 20)
+            self.game.draw_text('Cláudio Colombo', 35, WIDTH / 2, HEIGHT / 2 + 30)
+            self.game.draw_text('Amanda Milleo', 35, WIDTH / 2, HEIGHT / 2 + 80)
             self.blit_screen()
 
 
@@ -300,9 +306,6 @@ class ControlsMenu(Menu):
         self.run_display = True
         while self.run_display:
             self.draw_background('gameinfo/graphics/ui/keybinds.png')
-            # self.game.draw_text('Créditos', 40, WIDTH / 2, HEIGHT / 2 - 200)
-            # self.game.draw_text('Design de Interface:', 40, WIDTH / 2, HEIGHT / 2 - 120)
-            # self.game.draw_text('Yan Ferreira', 35, WIDTH / 2, HEIGHT / 2 - 50)
             self.game.check_events()
             if self.game.BACK_KEY:
                 self.menu_button_sound(self.menu_enter_sound)
