@@ -57,15 +57,11 @@ class Level():
         # Particulas
         self.animation_player = AnimationPlayer()
         self.magic_player = MagicPlayer(self.animation_player)
-
         
 
     def draw_bg(self,image):
         icon_surface = pygame.image.load(image)
-        self.display.blit(icon_surface, [0,0])
-
-    def draw_background(self,bg):
-        self.draw_bg(bg)    
+        self.display.blit(icon_surface, [0,0]) 
 
     def create_map(self):
         layouts = {

@@ -2,13 +2,17 @@ import pygame, sys
 from settings import *
 from level import Level
 from menu import *
+from npc import NPC1
 from escape_menu import *
 from objective_screen import *
+import os
      
 class Game:
     def __init__(self):
+    
         #setup geral
         pygame.init()
+        
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT), flags=pygame.SCALED, vsync=1)
         pygame.display.set_caption('Outcaster')
         self.clock = pygame.time.Clock()
@@ -23,13 +27,14 @@ class Game:
         self.credits = CreditsMenu(self)
         self.controls = ControlsMenu(self)
         self.quit = QuitMenu(self)
-        self.curr_menu = self.main_menu
 
     def game_loop(self):
         while self.playing:
             g.run()
             self.check_events()
             self.level.visible.update()
+            #player_rect = self.level.player.rect
+            #self.checking_interaction(player_rect)
             self.level.run()
 
     def check_events(self):
@@ -53,6 +58,27 @@ class Game:
                     self.RIGHT_KEY = True
                 if event.key == pygame.K_g:
                     self.G_KEY = True
+
+    #def checking_interaction(self, player):
+    #    for npc in self.level.visible_sprites:
+    #        if isinstance(npc, NPC1):
+    #            npc.update()
+    #            if player.colliderect(npc.rect):
+    #                print("collision")
+    #                if self.G_KEY == True:
+    #                    self.execute_dialogue(npc)
+                    
+    #def execute_dialogue(self, npc):
+        #print("NPC Dialogue: Hello World!")
+        #self.draw_speech_bubble(
+        #    self.screen,  # Use self.screen para desenhar na tela principal
+        #    "Hello World!",  # Texto do diálogo
+        #    self.WHITE,  # Cor do texto
+        #    self.BLACK,  # Cor de fundo do balão
+        #    (100, 100),  # Posição do balão
+        #    24  # Tamanho da fonte
+        #)
+        #pygame.display.update()
 
     def reset_keys(self):
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY, self.LEFT_KEY, self.RIGHT_KEY = False, False, False, False, False, False
