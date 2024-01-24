@@ -27,6 +27,7 @@ class Game:
         self.credits = CreditsMenu(self)
         self.controls = ControlsMenu(self)
         self.quit = QuitMenu(self)
+        self.curr_menu = self.main_menu
 
     def game_loop(self):
         while self.playing:
