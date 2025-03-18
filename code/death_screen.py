@@ -6,11 +6,6 @@ class DeathScreen():
         self.display = pygame.display.get_surface()
         self.offset = - 120
         self.offsetR = - 195
-        self.ver = VER
-        if self.ver == 0:
-            self.music = 2
-            self.sfx = 2
-            self.ver += 1
         
         self.cursor_rect = pygame.Rect(0, 0, 80, 20)
         self.cursor_rectR = pygame.Rect(0, 0, 80, 20)

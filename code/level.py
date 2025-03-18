@@ -2,7 +2,6 @@ import pygame
 from settings import *
 from tile import Tile
 from player import Player
-from debug import debug
 from support import *
 from random import choice, randint
 from weapon import Weapon
@@ -12,7 +11,6 @@ from particles import AnimationPlayer
 from magic import MagicPlayer
 from inventory import Inventory
 from escape_menu import *
-from npc import NPC1
 from death_screen import *
 
 class Level():
@@ -45,7 +43,6 @@ class Level():
 
         # SETUP SPRITES
         self.create_map()
-        self.create_npc()
 
         # INTERFACE DO USUÁRIO
         self.ui = UI()
@@ -99,8 +96,7 @@ class Level():
 									self.obstacle_sprites,
 									self.create_attack,
 									self.destroy_attack,
-									self.create_magic,
-                                    NPC1)
+									self.create_magic)
                             else:
                                 if col == '390': monster_name = 'bamboo'
                                 elif col == '391': monster_name = 'spirit'
@@ -114,13 +110,6 @@ class Level():
 									self.damage_player,
                                     self.trigger_death_particles,
                                     self.add_coin)
-
-    def create_npc(self):
-        npc_position = (2162, 870)
-        self.npc = NPC1(npc_position)
-        self.visible_sprites.add(self.npc)
-        self.visible.add(self.npc)
-        self.obstacle_sprites.add(self.npc)
 
     def check_events(self):
         for event in pygame.event.get():
@@ -208,9 +197,7 @@ class Level():
             self.menu_open = self.escape_main_menu.display_esc()
         elif self.player.health == 0:
             self.death_screen.display_esc()
-        else:
-            if pygame.sprite.collide_rect(self.player, self.npc):
-                print("collision")
+        
         self.visible_sprites.update()
         self.visible_sprites.enemy_update(self.player)
         self.player_attack_logic()
