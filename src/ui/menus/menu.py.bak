@@ -1,0 +1,364 @@
+import pygame, sys
+from config.settings import *
+
+class Menu:
+    def __init__(self, game):
+        self.game = game
+        self.mid_w, self.mid_h = WIDTH / 2, HEIGHT / 2
+        self.run_display = True
+        self.cursor_rect = pygame.Rect(0, 0, 80, 20)
+        self.cursor_rectR = pygame.Rect(0, 0, 80, 20)
+        self.offset = -120
+        self.offsetR = -195
+        self.music = 4
+        self.sfx = 4
+        self.menu_enter_sound = 'gameinfo/audio/confirm_ui.wav'
+        self.menu_cursor_sound = 'gameinfo/audio/back_ui.wav'
+        self.menu_config_sound = 'gameinfo/audio/change_ui.wav'
+
+    def menu_button_sound(self, sound):
+        cursor_s = pygame.mixer.Sound(sound)
+        cursor_s.set_volume(self.sfx / 10)
+        cursor_s.play()
+
+    def draw_cursor(self):
+        self.game.draw_icon(self.cursor_rect.x, self.cursor_rect.y, 'gameinfo/graphics/ui/cursor.png')
+
+    def draw_cursorR(self):
+        self.game.draw_icon(self.cursor_rectR.x, self.cursor_rectR.y, 'gameinfo/graphics/ui/cursor.png')
+
+    def draw_background(self, bg):
+        self.game.draw_bg(bg)
+
+    def draw_text_hover(self, text, size, x, y, color_normal='white', color_hover='yellow'):
+        """Draw text that changes color on hover and returns rect and hover state."""
+        font = pygame.font.Font(UI_FONT, size)
+        
+        # Determine if mouse is hovering
+        mouse_pos = pygame.mouse.get_pos()
+        temp_surface = font.render(text, True, color_normal)
+        rect = temp_surface.get_rect(center=(x, y))
+        
+        is_hovered = rect.collidepoint(mouse_pos)
+        color = color_hover if is_hovered else color_normal
+        
+        text_surface = font.render(text, True, color)
+        self.game.display.blit(text_surface, rect)
+        
+        return rect, is_hovered
+
+    def blit_screen(self):
+        self.game.screen.blit(self.game.display, (0, 0))
+        pygame.display.update()
+        self.game.reset_keys()
+
+
+class MainMenu(Menu):
+    def __init__(self, game):
+        super().__init__(game)
+        self.state = "Start"
+        
+        # Menu options configuration
+        self.options = [
+            {"text": "Começar o jogo", "state": "Start", "y_offset": 50},
+            {"text": "Opções", "state": "Options", "y_offset": 100},
+            {"text": "Créditos", "state": "Credits", "y_offset": 150},
+            {"text": "Sair do Jogo", "state": "Quit", "y_offset": 200}
+        ]
+        
+        self.title_sound = pygame.mixer.Sound('gameinfo/audio/Panacea.ogg')
+        self.title_sound.set_volume(self.music / 20)
+        self.title_sound.play(loops=-1)
+
+    def display_menu(self):
+        self.run_display = True
+        while self.run_display:
+            self.game.check_events()
+            self.check_input()
+            self.draw_background('gameinfo/graphics/ui/main_menu.png')
+            
+            mouse_clicked = False
+            if pygame.mouse.get_pressed()[0]: # Left click
+                mouse_clicked = True
+
+            # Draw options and handle mouse interaction
+            for opt in self.options:
+                x, y = self.mid_w, self.mid_h + opt["y_offset"]
+                rect, hovered = self.draw_text_hover(opt["text"], 35, x, y)
+                
+                # Update state on hover
+                if hovered:
+                    if self.state != opt["state"]:
+                        self.menu_button_sound(self.menu_cursor_sound)
+                        self.state = opt["state"]
+                    
+                    # Handle click
+                    if mouse_clicked:
+                        self.game.keys['start'] = True
+                        self.check_input() # Re-check input to trigger action
+
+            # Draw cursors based on current state
+            # Find current option y position
+            current_y = next((self.mid_h + o["y_offset"] for o in self.options if o["state"] == self.state), self.mid_h)
+            
+            self.cursor_rect.midtop = (self.mid_w + self.offset, current_y)
+            self.cursor_rectR.midtop = (self.mid_w - self.offsetR, current_y)
+            
+            self.game.draw_text("V0.1.2", 20, WIDTH / 2 - 640, HEIGHT / 2 + 360)
+            self.draw_cursor()
+            self.draw_cursorR()
+            self.blit_screen()
+
+    def move_cursor(self):
+        # Keyboard navigation
+        idx = next((i for i, o in enumerate(self.options) if o["state"] == self.state), 0)
+        
+        if self.game.keys['down']:
+            self.menu_button_sound(self.menu_cursor_sound)
+            idx = (idx + 1) % len(self.options)
+            self.state = self.options[idx]["state"]
+            self.game.keys['down'] = False # Consume key
+            
+        elif self.game.keys['up']:
+            self.menu_button_sound(self.menu_cursor_sound)
+            idx = (idx - 1) % len(self.options)
+            self.state = self.options[idx]["state"]
+            self.game.keys['up'] = False # Consume key
+
+    def check_input(self):
+        self.move_cursor()
+        if self.game.keys['start']:
+            self.game.keys['start'] = False # Reset key
+            self.menu_button_sound(self.menu_enter_sound)
+            if self.state == 'Start':
+                self.title_sound.fadeout(2000)
+                self.game.playing = True
+            elif self.state == 'Options':
+                self.game.curr_menu = self.game.options
+            elif self.state == 'Credits':
+                self.game.curr_menu = self.game.credits
+            elif self.state == 'Quit':
+                self.game.curr_menu = self.game.quit
+            self.run_display = False
+
+
+class QuitMenu(Menu):
+    def __init__(self, game):
+        super().__init__(game)
+        self.state = "Não"
+        self.options = [
+            {"text": "Sim", "state": "Sim", "x_offset": -100, "y_offset": 100},
+            {"text": "Não", "state": "Não", "x_offset": 100,  "y_offset": 100}
+        ]
+
+    def display_menu(self):
+        self.run_display = True
+        while self.run_display:
+            self.game.check_events()
+            self.check_input()
+            self.draw_background('gameinfo/graphics/ui/main_menu.png')
+            self.game.draw_text("Deseja sair do jogo?", 35, self.mid_w, self.mid_h)
+            
+            mouse_clicked = False
+            if pygame.mouse.get_pressed()[0]:
+                mouse_clicked = True
+            
+            for opt in self.options:
+                x = self.mid_w + opt["x_offset"]
+                y = self.mid_h + opt["y_offset"]
+                rect, hovered = self.draw_text_hover(opt["text"], 35, x, y)
+                
+                if hovered:
+                    if self.state != opt["state"]:
+                        self.menu_button_sound(self.menu_cursor_sound)
+                        self.state = opt["state"]
+                    if mouse_clicked:
+                        self.game.keys['start'] = True
+                        self.check_input()
+
+            # Update cursor position
+            current_opt = next((o for o in self.options if o["state"] == self.state), self.options[1])
+            cx = self.mid_w + current_opt["x_offset"]
+            cy = self.mid_h + current_opt["y_offset"]
+            
+            self.cursor_rect.midtop = (cx + self.offset + 80, cy)
+            self.cursor_rectR.midtop = (cx - self.offsetR - 80, cy)
+            
+            self.draw_cursor()
+            self.draw_cursorR()
+            self.blit_screen()
+
+    def move_cursor(self):
+        if self.game.keys['left'] or self.game.keys['right']:
+            self.menu_button_sound(self.menu_cursor_sound)
+            if self.state == 'Não':
+                self.state = 'Sim'
+            elif self.state == 'Sim':
+                self.state = 'Não'
+            
+            # Reset keys
+            self.game.keys['left'] = False
+            self.game.keys['right'] = False
+
+    def check_input(self):
+        self.move_cursor()
+        if self.game.keys['start']:
+            self.game.keys['start'] = False
+            self.menu_button_sound(self.menu_enter_sound)
+            if self.state == 'Sim':
+                pygame.quit()
+                sys.exit()
+            elif self.state == 'Não':
+                self.game.curr_menu = self.game.main_menu
+            self.run_display = False
+
+
+class OptionsMenu(Menu):
+    def __init__(self, game):
+        super().__init__(game)
+        self.state = 'Música'
+        
+        # Layout config
+        self.items = [
+            {"label": "Música", "state": "Música", "y_offset": -50},
+            {"label": "SFX", "state": "SFX", "y_offset": 50},
+            {"label": "Controles", "state": "Controles", "y_offset": 150}
+        ]
+
+    def display_menu(self):
+        self.run_display = True
+        while self.run_display:
+            self.game.check_events()
+            if self.game.keys['back']:
+                self.menu_button_sound(self.menu_cursor_sound)
+                self.game.curr_menu = self.game.main_menu
+                self.run_display = False
+                continue
+
+            self.ast_m = "*" * int(self.music)
+            self.ast_s = "*" * int(self.sfx)
+            self.check_input()
+            
+            self.draw_background('gameinfo/graphics/ui/options.png')
+            self.game.draw_text("Volume", 45, self.mid_w, self.mid_h - 150)
+            
+            # Interactive elements
+            mouse_clicked = pygame.mouse.get_pressed()[0]
+            
+            for item in self.items:
+                y = self.mid_h + item["y_offset"]
+                # Draw label
+                rect, hovered = self.draw_text_hover(item["label"], 35, self.mid_w, y)
+                
+                if hovered:
+                    if self.state != item["state"]:
+                         self.menu_button_sound(self.menu_cursor_sound)
+                         self.state = item["state"]
+                    if mouse_clicked and self.state == 'Controles':
+                        self.game.keys['start'] = True
+
+                # Draw value/extra info if applicable
+                if item["state"] == "Música":
+                    self.game.draw_text(f"{self.music} {self.ast_m}", 30, self.mid_w, y + 35)
+                elif item["state"] == "SFX":
+                    self.game.draw_text(f"{self.sfx} {self.ast_s}", 30, self.mid_w, y + 35)
+
+            # Draw cursor
+            current_item = next((i for i in self.items if i["state"] == self.state), self.items[0])
+            cy = self.mid_h + current_item["y_offset"]
+            
+            self.cursor_rect.midtop = (self.mid_w + self.offset, cy)
+            self.cursor_rectR.midtop = (self.mid_w - self.offsetR, cy)
+            
+            self.draw_cursor()
+            self.draw_cursorR()
+            self.blit_screen()
+
+    def move_cursor(self):
+        # Keyboard navigation logic simplified
+        states = [i["state"] for i in self.items]
+        try:
+            curr_idx = states.index(self.state)
+        except ValueError:
+            curr_idx = 0
+            
+        if self.game.keys['down']:
+            self.menu_button_sound(self.menu_cursor_sound)
+            self.state = states[(curr_idx + 1) % len(states)]
+            self.game.keys['down'] = False
+        elif self.game.keys['up']:
+            self.menu_button_sound(self.menu_cursor_sound)
+            self.state = states[(curr_idx - 1) % len(states)]
+            self.game.keys['up'] = False
+
+        # Value adjustment
+        elif self.game.keys['left']:
+            self.game.keys['left'] = False
+            if self.state == 'Música' and self.music > 0:
+                self.menu_button_sound(self.menu_config_sound)
+                self.music -= 1
+            elif self.state == 'SFX' and self.sfx > 0:
+                self.menu_button_sound(self.menu_config_sound)
+                self.sfx -= 1
+
+        elif self.game.keys['right']:
+            self.game.keys['right'] = False
+            if self.state == 'Música' and self.music < 10:
+                self.menu_button_sound(self.menu_config_sound)
+                self.music += 1
+            elif self.state == 'SFX' and self.sfx < 10:
+                self.menu_button_sound(self.menu_config_sound)
+                self.sfx += 1
+
+    def check_input(self):
+        self.move_cursor()
+        if self.game.keys['start']:
+            self.menu_button_sound(self.menu_enter_sound)
+            if self.state == 'Controles':
+                self.game.curr_menu = self.game.controls
+            self.run_display = False
+
+
+class CreditsMenu(Menu):
+    def __init__(self, game):
+        super().__init__(game)
+
+    def display_menu(self):
+        self.run_display = True
+        while self.run_display:
+            self.game.check_events()
+            if self.game.keys['back']:
+                self.menu_button_sound(self.menu_cursor_sound)
+                self.game.curr_menu = self.game.main_menu
+                self.run_display = False
+                continue
+            self.draw_background('gameinfo/graphics/ui/credits.png')
+            self.game.draw_text('Victor Hideyuki Tanaka', 35, WIDTH / 2, HEIGHT / 2 - 120)
+            self.game.draw_text('Yan Ferreira David', 35, WIDTH / 2, HEIGHT / 2 - 70)
+            self.game.draw_text('Matheus Machado Pereira', 35, WIDTH / 2, HEIGHT / 2 - 20)
+            self.game.draw_text('Cláudio Colombo', 35, WIDTH / 2, HEIGHT / 2 + 30)
+            self.game.draw_text('Amanda Milleo', 35, WIDTH / 2, HEIGHT / 2 + 80)
+            self.blit_screen()
+
+
+class ControlsMenu(Menu):
+    def __init__(self, game):
+        super().__init__(game)
+
+    def display_menu(self):
+        self.run_display = True
+        while self.run_display:
+            self.draw_background('gameinfo/graphics/ui/keybinds.png')
+            self.game.check_events()
+            
+            # Additional back button UI
+            back_rect, hovered = self.draw_text_hover("Voltar", 30, 100, HEIGHT - 50)
+            if hovered and pygame.mouse.get_pressed()[0]:
+                self.game.keys['back'] = True
+            
+            if self.game.keys['back']:
+                self.menu_button_sound(self.menu_enter_sound)
+                self.game.curr_menu = self.game.options
+                self.run_display = False
+                continue
+            self.blit_screen()

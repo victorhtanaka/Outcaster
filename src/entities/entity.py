@@ -13,14 +13,18 @@ class Entity(pygame.sprite.Sprite):
         self.direction = pygame.math.Vector2()
         self.obstacle_sprites = None
 
-    def move(self, speed):
+    def move(self, speed, dt=1.0):
         """Move entity with collision detection."""
         if self.direction.magnitude() != 0:
             self.direction = self.direction.normalize()
+        
+        # Adjust speed by delta time
+        # Assuming speed is roughly pixels/frame at 60 FPS
+        adjusted_speed = speed * dt * 60
 
-        self.hitbox.x += self.direction.x * speed
+        self.hitbox.x += self.direction.x * adjusted_speed
         self._handle_collision('horizontal')
-        self.hitbox.y += self.direction.y * speed
+        self.hitbox.y += self.direction.y * adjusted_speed
         self._handle_collision('vertical')
         self.rect.center = self.hitbox.center
 

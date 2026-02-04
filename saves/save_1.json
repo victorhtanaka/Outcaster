@@ -1,0 +1,112 @@
+{
+    "timestamp": "2026-02-04 13:19:36.998719",
+    "player": {
+        "pos": [
+            2222,
+            1376
+        ],
+        "stats": {
+            "health": 100,
+            "energy": 60,
+            "attack": 10,
+            "magic": 12,
+            "speed": 6
+        },
+        "health": 100,
+        "energy": 60,
+        "coin": 200,
+        "weapon_index": 0,
+        "magic_index": 0,
+        "inventory_old": {
+            "coins": 10,
+            "rock": 2,
+            "diamonds": 3,
+            "gold": 10
+        },
+        "inventory": {
+            "slots": [
+                {
+                    "item_id": "sword",
+                    "quantity": 1
+                },
+                {
+                    "item_id": "axe",
+                    "quantity": 1
+                },
+                {
+                    "item_id": "flame_scroll",
+                    "quantity": 3
+                },
+                {
+                    "item_id": "heal_scroll",
+                    "quantity": 5
+                },
+                {
+                    "item_id": "health_potion",
+                    "quantity": 10
+                },
+                {
+                    "item_id": "mana_potion",
+                    "quantity": 5
+                },
+                {
+                    "item_id": "apple",
+                    "quantity": 15
+                },
+                {
+                    "item_id": "bread",
+                    "quantity": 8
+                },
+                {
+                    "item_id": "wood",
+                    "quantity": 20
+                },
+                {
+                    "item_id": "stone",
+                    "quantity": 15
+                },
+                {
+                    "item_id": "coin",
+                    "quantity": 100
+                },
+                {
+                    "item_id": null,
+                    "quantity": 0
+                },
+                {
+                    "item_id": null,
+                    "quantity": 0
+                },
+                {
+                    "item_id": null,
+                    "quantity": 0
+                },
+                {
+                    "item_id": null,
+                    "quantity": 0
+                },
+                {
+                    "item_id": null,
+                    "quantity": 0
+                },
+                {
+                    "item_id": null,
+                    "quantity": 0
+                },
+                {
+                    "item_id": null,
+                    "quantity": 0
+                },
+                {
+                    "item_id": null,
+                    "quantity": 0
+                },
+                {
+                    "item_id": null,
+                    "quantity": 0
+                }
+            ],
+            "selected_index": 0
+        }
+    }
+}

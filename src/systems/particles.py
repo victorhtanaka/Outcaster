@@ -104,6 +104,6 @@ class ParticleEffect(pygame.sprite.Sprite):
         else:
             self.image = self.frames[int(self.frame_index)]
     
-    def update(self):
+    def update(self, dt=1.0):
         """Update particle state."""
         self.animate()

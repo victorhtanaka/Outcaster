@@ -1,0 +1,19 @@
+{
+    "village_elder": {
+        "speaker": "Ancião da Vila",
+        "messages": [
+            "Bem-vindo, viajante!",
+            "Esta terra foi assolada por criaturas das trevas.",
+            "Você deve ser corajoso para estar aqui.",
+            "Cuidado ao explorar as florestas ao norte."
+        ]
+    },
+    "merchant": {
+        "speaker": "Viajante Mercador",
+        "messages": [
+            "Olá! Procurando itens raros?",
+            "Tenho as melhores poções da região.",
+            "Mas custam caro!"
+        ]
+    }
+}

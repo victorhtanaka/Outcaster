@@ -2,7 +2,7 @@
 import pygame
 from config.settings import TILESIZE
 from random import randint
-
+from src.core.resource_manager import ResourceManager
 
 class MagicPlayer:
     """Handles player magic spells and effects."""
@@ -18,8 +18,8 @@ class MagicPlayer:
     def __init__(self, animation_player):
         self.animation_player = animation_player
         self.sounds = {
-            'heal': pygame.mixer.Sound('gameinfo/audio/heal.wav'),
-            'flame': pygame.mixer.Sound('gameinfo/audio/Fire.wav')
+            'heal': ResourceManager().load_sound('gameinfo/audio/heal.wav'),
+            'flame': ResourceManager().load_sound('gameinfo/audio/Fire.wav')
         }
 
     def heal(self, player, strength, cost, groups):

@@ -1,5 +1,6 @@
 import pygame, sys
 from config.settings import *
+from src.core.resource_manager import ResourceManager
 
 class DeathScreen():
     def __init__(self):
@@ -14,9 +15,11 @@ class DeathScreen():
         self.menu_enter_sound = 'gameinfo/audio/confirm_ui.wav'
         self.menu_cursor_sound = 'gameinfo/audio/back_ui.wav'
         self.menu_config_sound = 'gameinfo/audio/change_ui.wav'
+        self.sfx = 4
+        self.music = 4
     
     def menu_button_sound(self,sound):
-        self.cursor_s = pygame.mixer.Sound(sound)
+        self.cursor_s = ResourceManager().load_sound(sound)
         self.cursor_s.set_volume(self.sfx / 10)
         self.cursor_s.play()
 

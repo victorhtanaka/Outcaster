@@ -59,6 +59,13 @@ class InventorySlot:
             return ITEM_DATA.get(self.item_id, {})
         return {}
 
+    def to_dict(self):
+        return {"item_id": self.item_id, "quantity": self.quantity}
+    
+    def from_dict(self, data):
+        self.item_id = data.get("item_id")
+        self.quantity = data.get("quantity", 0)
+
 
 class InventorySystem:
     """Manages player inventory with 20 slots."""
@@ -68,6 +75,19 @@ class InventorySystem:
     def __init__(self):
         self.slots: List[InventorySlot] = [InventorySlot() for _ in range(self.MAX_SLOTS)]
         self.selected_index = 0
+
+    def to_dict(self):
+        return {
+            "slots": [slot.to_dict() for slot in self.slots],
+            "selected_index": self.selected_index
+        }
+
+    def from_dict(self, data):
+        slot_data = data.get("slots", [])
+        for i, s_data in enumerate(slot_data):
+            if i < len(self.slots):
+                self.slots[i].from_dict(s_data)
+        self.selected_index = data.get("selected_index", 0)
     
     def add_item(self, item_id: str, quantity: int = 1) -> bool:
         """

@@ -2,7 +2,7 @@
 import pygame
 from config.settings import *
 from config.game_data import magic_data, weapon_data
-
+from src.core.resource_manager import ResourceManager
 
 class UI:
     """Handles in-game UI display for player stats."""
@@ -23,12 +23,17 @@ class UI:
         
         # Load magic graphics
         self.magic_graphics = self._load_magic_graphics()
+
+        # Cache for coin text
+        self.last_coin_amount = -1
+        self.coin_surf = None
+        self.coin_rect = None
     
     def _load_magic_graphics(self):
         """Load all magic spell graphics."""
         graphics = []
         for magic in magic_data.values():
-            image = pygame.image.load(magic['graphic']).convert_alpha()
+            image = ResourceManager().load_image(magic['graphic'])
             graphics.append(image)
         return graphics
     
@@ -47,15 +52,18 @@ class UI:
     
     def show_coin(self, coin):
         """Display player coin count."""
-        text_surf = self.font.render(str(int(coin)), False, TEXT_COLOR)
-        text_rect = text_surf.get_rect(center=self.COIN_POS)
-        
+        coin = int(coin)
+        if coin != self.last_coin_amount:
+            self.last_coin_amount = coin
+            self.coin_surf = self.font.render(str(coin), False, TEXT_COLOR)
+            self.coin_rect = self.coin_surf.get_rect(center=self.COIN_POS)
+            
         # Draw background box
-        bg_rect = text_rect.inflate(20, 20)
+        bg_rect = self.coin_rect.inflate(20, 20)
         pygame.draw.rect(self.display_surface, UI_BG_COLOR, bg_rect)
         
         # Draw text and border
-        self.display_surface.blit(text_surf, text_rect)
+        self.display_surface.blit(self.coin_surf, self.coin_rect)
         pygame.draw.rect(self.display_surface, UI_BORDER_COLOR, bg_rect, 3)
     
     def _draw_selection_box(self, has_switched):

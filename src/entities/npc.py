@@ -70,6 +70,6 @@ class NPC(Entity):
             
             self.image = self.animations[self.status][int(self.frame_index)]
     
-    def update(self):
+    def update(self, dt=1.0):
         """Update NPC state."""
         self.animate()

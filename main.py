@@ -4,7 +4,8 @@ import sys
 
 from config.settings import WIDTH, HEIGHT, FPS, UI_FONT
 from src.core.level import Level
-from src.ui.menus.menu import MainMenu, OptionsMenu, CreditsMenu, ControlsMenu, QuitMenu
+from src.core.input_config import InputConfig
+from src.ui.menus.menu import MainMenu, OptionsMenu, CreditsMenu, ControlsMenu, QuitMenu, LoadMenu
 from src.ui.screens.objective_screen import ObjectiveScreenOp
 
 
@@ -12,7 +13,13 @@ class Game:
     """Main game class managing game loop and state."""
     
     def __init__(self):
+        # Pre-initialize mixer with small buffer to reduce latency
+        pygame.mixer.pre_init(44100, -16, 2, 512)
         pygame.init()
+        
+        # Load Input Config
+        InputConfig.load_config()
+        
         self._init_display()
         self._init_game_state()
         self._init_menus()
@@ -46,6 +53,7 @@ class Game:
         self.credits = CreditsMenu(self)
         self.controls = ControlsMenu(self)
         self.quit = QuitMenu(self)
+        self.load_menu = LoadMenu(self)
         self.curr_menu = self.main_menu
 
     def load_image(self, path, convert_alpha=True):
@@ -77,20 +85,24 @@ class Game:
 
     def _handle_keydown(self, key):
         """Handle keyboard input."""
-        key_mapping = {
-            pygame.K_RETURN: 'start',
-            pygame.K_BACKSPACE: 'back',
-            pygame.K_DOWN: 'down',
-            pygame.K_UP: 'up',
-            pygame.K_LEFT: 'left',
-            pygame.K_RIGHT: 'right',
-            pygame.K_g: 'g',
-        }
+        # Configurable binds (Gameplay keys also work for menu navigation)
+        if key == InputConfig.get_key('move_up'): self.keys['up'] = True
+        if key == InputConfig.get_key('move_down'): self.keys['down'] = True
+        if key == InputConfig.get_key('move_left'): self.keys['left'] = True
+        if key == InputConfig.get_key('move_right'): self.keys['right'] = True
+        if key == InputConfig.get_key('dialogue_advance'): self.keys['start'] = True
+        if key == InputConfig.get_key('journal'): self.keys['g'] = True
         
-        if key in key_mapping:
-            self.keys[key_mapping[key]] = True
-        elif key == pygame.K_ESCAPE:
-            self.level.toggle_menu()
+        # Hardcoded Standard Menu Keys (Always working for UI)
+        if key == pygame.K_UP: self.keys['up'] = True
+        if key == pygame.K_DOWN: self.keys['down'] = True
+        if key == pygame.K_LEFT: self.keys['left'] = True
+        if key == pygame.K_RIGHT: self.keys['right'] = True
+        if key == pygame.K_RETURN: self.keys['start'] = True
+        if key == pygame.K_BACKSPACE: self.keys['back'] = True
+        
+        if key == pygame.K_ESCAPE:
+            self.keys['back'] = True
 
     def reset_keys(self):
         """Reset all key states."""
@@ -115,12 +127,12 @@ class Game:
         bg_surface = self.load_image(image_path, convert_alpha=False)
         self.display.blit(bg_surface, (0, 0))
 
-    def update(self):
+    def update(self, dt):
         """Update game state."""
         if self.objective:
             self.objective = self.objective_screen.display_objective()
         else:
-            self.level.run()
+            self.level.run(dt)
 
     def render(self):
         """Render game graphics."""
@@ -136,13 +148,16 @@ class Game:
         """Main game loop."""
         while self.playing:
             # Don't consume events in main loop - let Level handle them
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.quit_game()
+            pass
+            # for event in pygame.event.get():
+            #    if event.type == pygame.QUIT:
+            #        self.quit_game()
             
-            self.update()
+            # Calculate delta time in seconds
+            dt = self.clock.tick(FPS) / 1000.0
+            
+            self.update(dt)
             self.render()
-            self.clock.tick(FPS)
 
     def run(self):
         """Main application loop."""

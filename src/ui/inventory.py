@@ -1,6 +1,7 @@
 import pygame
 from config.settings import *
 from config.game_data import inventory_data, inventory_images
+from src.core.resource_manager import ResourceManager
 
 class Inventory:
     def __init__(self,player):
@@ -16,7 +17,7 @@ class Inventory:
         self.display = pygame.Surface((WIDTH,HEIGHT))
 
     def draw_icon(self,x,y,icon):
-        icon_surface = pygame.image.load(icon)
+        icon_surface = ResourceManager().load_image(icon)
         icon_rect = icon_surface.get_rect()
         icon_rect.center = (x,y)
         self.display.blit(icon_surface, icon_rect)

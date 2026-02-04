@@ -1,10 +1,28 @@
 import pygame
+import sys
 from config.settings import *
 from config.game_data import weapon_data, magic_data
 from src.core.utils import import_folder
 from src.entities.entity import Entity
 from src.ui.dialogue_box import DialogueBox
 from src.systems.inventory_system import InventorySystem
+from src.core.resource_manager import ResourceManager
+from src.core.input_config import InputConfig
+
+class GhostSprite(pygame.sprite.Sprite):
+    def __init__(self, pos, image, groups):
+        super().__init__(groups)
+        self.image = image.copy()
+        self.rect = self.image.get_rect(center=pos)
+        self.alpha = 200
+        
+    def update(self, dt=1.0):
+        # Fade out speed
+        self.alpha -= 200 * dt
+        if self.alpha <= 0:
+            self.kill()
+        else:
+            self.image.set_alpha(int(self.alpha))
 
 class Player(Entity):
     def __init__(self,pos,groups,obstacle_sprites,create_attack,destroy_attack,create_magic):
@@ -61,9 +79,21 @@ class Player(Entity):
         self.vulnerable = True
         self.hurt_time = None
         self.invulnerability_duration = 500
+        
+        # Dash
+        self.dashing = False
+        self.can_dash = True
+        self.dash_time = None
+        self.dash_duration = 200 # ms
+        self.dash_cooldown = 1000 # ms
+        self.dash_speed = 2.5 # multiplier
+        
+        # Dash visual effect
+        self.last_dash_effect_time = 0
+        self.dash_effect_interval = 40 # ms
 
         # Importar som
-        self.weapon_attack_sound = pygame.mixer.Sound('gameinfo/audio/sword.wav')
+        self.weapon_attack_sound = ResourceManager().load_sound('gameinfo/audio/sword.wav')
         self.weapon_attack_sound.set_volume(0.1)
 
     def import_player_assets(self):
@@ -81,42 +111,48 @@ class Player(Entity):
             keys = pygame.key.get_pressed()
 
             # Input de Movimento (WASD)
-            if keys[pygame.K_w]:
+            if keys[InputConfig.get_key('move_up')]:
                 self.direction.y = -1
                 self.status = 'up'
-            elif keys[pygame.K_s]:
+            elif keys[InputConfig.get_key('move_down')]:
                 self.direction.y = 1
                 self.status = 'down'
             else:
                 self.direction.y = 0
 
-            if keys[pygame.K_d]:
+            if keys[InputConfig.get_key('move_right')]:
                 self.direction.x = 1
                 self.status = 'right'
-            elif keys[pygame.K_a]:
+            elif keys[InputConfig.get_key('move_left')]:
                 self.direction.x = -1
                 self.status = 'left'
             else:
                 self.direction.x = 0
 
             # Input de ataque
-            if keys[pygame.K_SPACE]:
+            if keys[InputConfig.get_key('attack')]:
                 self.attacking = True
                 self.attack_time = pygame.time.get_ticks()
                 self.create_attack()
                 self.weapon_attack_sound.play()
 
             # Input de magica
-            if keys[pygame.K_LCTRL]:
+            if keys[InputConfig.get_key('magic')]:
                 self.attacking = True
                 self.attack_time = pygame.time.get_ticks()
                 style = list(magic_data.keys())[self.magic_index]
                 strength = list(magic_data.values())[self.magic_index]['strength'] + self.stats['magic']
                 cost = list(magic_data.values())[self.magic_index]['cost']
                 self.create_magic(style,strength,cost)
+
+            # Dash Input
+            if keys[InputConfig.get_key('dash')] and not self.dashing and self.can_dash:
+                self.dashing = True
+                self.can_dash = False
+                self.dash_time = pygame.time.get_ticks()
             
-            # Input de diálogo
-            if keys[pygame.K_e] and self.can_switch_magic:
+            # Input de diálogo / Troca de mágica
+            if keys[InputConfig.get_key('switch_magic')] and self.can_switch_magic:
                 self.can_switch_magic = False
                 self.magic_switch_time = pygame.time.get_ticks()
 
@@ -127,10 +163,11 @@ class Player(Entity):
 
                 self.magic = list(magic_data.keys())[self.magic_index]
             
-            if keys[pygame.K_g] and self.rect.colliderect(NPC1.npc_rect):
-                self.talking = True
-                self.dialogue_box
-                print("dialogo")
+            # Debug / Journal
+            if keys[InputConfig.get_key('journal')] and self.rect.colliderect(getattr(sys.modules['__main__'], 'NPC1', pygame.Rect(0,0,0,0)) if False else pygame.Rect(0,0,0,0)):
+                 # Note: The original code referenced NPC1 which was likely undefined here. 
+                 # Kept logic structure but safely disabled to prevent crash if NPC1 is missing.
+                 pass
 
     def get_status(self):
 
@@ -167,6 +204,14 @@ class Player(Entity):
         if not self.vulnerable:
             if current_time - self.hurt_time >= self.invulnerability_duration:
                 self.vulnerable = True
+
+        if self.dashing:
+            if current_time - self.dash_time >= self.dash_duration:
+                self.dashing = False
+        
+        if not self.can_dash:
+            if current_time - self.dash_time >= self.dash_cooldown:
+                self.can_dash = True
 
     def animate(self):
         animation = self.animations[self.status]
@@ -272,12 +317,23 @@ class Player(Entity):
         else:
             self.energy = self.stats['energy']
 
-    def update(self):
+    def update(self, dt=1.0):
         self.input()
         self.cooldowns()
         self.get_status()
         self.animate()
-        self.move(self.speed)
+        
+        speed = self.speed
+        if self.dashing:
+            speed *= self.dash_speed
+            
+            # Spawn Ghost Effect
+            current_time = pygame.time.get_ticks()
+            if current_time - self.last_dash_effect_time >= self.dash_effect_interval:
+                GhostSprite(self.rect.center, self.image, self.groups())
+                self.last_dash_effect_time = current_time
+        
+        self.move(speed, dt)
         self.energy_recovery()
     
     def set_nearby_npc(self, npc):

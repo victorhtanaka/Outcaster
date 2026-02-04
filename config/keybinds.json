@@ -1,0 +1,15 @@
+{
+    "move_up": 119,
+    "move_down": 115,
+    "move_left": 97,
+    "move_right": 100,
+    "attack": 32,
+    "magic": 1073742048,
+    "switch_magic": 101,
+    "interact": 101,
+    "dash": 1073742049,
+    "inventory": 105,
+    "menu": 27,
+    "journal": 103,
+    "dialogue_advance": 32
+}

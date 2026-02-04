@@ -51,6 +51,25 @@ class DialogueSystem:
         """Register dialogue for an NPC."""
         speaker_name = speaker or npc_id
         self.dialogue_data[npc_id] = DialogueSequence(messages, speaker_name)
+
+    def load_from_json(self, path: str):
+        """Load dialogues from a JSON file."""
+        import json
+        try:
+            with open(path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            
+            for npc_id, content in data.items():
+                self.register_dialogue(
+                    npc_id, 
+                    content.get('messages', []), 
+                    content.get('speaker', "NPC")
+                )
+            print(f"Loaded dialogues from {path}")
+        except FileNotFoundError:
+            print(f"Dialogue file not found: {path}")
+        except json.JSONDecodeError:
+            print(f"Invalid JSON in dialogue file: {path}")
     
     def start_dialogue(self, npc_id: str, npc_obj=None):
         """Start dialogue with an NPC."""

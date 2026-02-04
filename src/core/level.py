@@ -1,9 +1,11 @@
 import pygame
+import sys
 from config.settings import *
 from src.entities.tile import Tile
 from src.entities.player import Player
 from src.entities.npc import NPC
 from src.core.utils import *
+from src.core.resource_manager import ResourceManager
 from random import choice, randint
 from src.systems.weapon import Weapon
 from src.systems.dialogue_system import DialogueSystem
@@ -16,6 +18,8 @@ from src.systems.magic import MagicPlayer
 from src.ui.inventory import Inventory
 from src.ui.menus.escape_menu import *
 from src.ui.screens.death_screen import *
+from src.systems.save_system import SaveSystem
+from src.core.input_config import InputConfig
 
 class Level():
     def __init__(self):
@@ -30,8 +34,8 @@ class Level():
         self.display_surface = pygame.display.get_surface()
 
         # Inventario e Menu Pause
-        self.inventory_open = False
-        self.menu_open = False
+        self.state = 'playing' # playing, paused, inventory, dialogue
+        self.save_system = SaveSystem()
 
         # titulo
         self.title_ver = True
@@ -72,37 +76,32 @@ class Level():
         self.animation_player = AnimationPlayer()
         self.magic_player = MagicPlayer(self.animation_player)
         
+        # Screen Shake, Hit Stop e Slow Motion
+        self.hit_stop_duration = 0
+        self.slow_motion_duration = 0
+        self.slow_motion_scale = 1.0
+
+    def trigger_hit_stop(self, duration):
+        """Para o jogo por alguns frames para dar impacto (Hit Stop)."""
+        self.hit_stop_duration = duration
+    
+    def trigger_slow_motion(self, duration, scale=0.5):
+        """Deixa o jogo em câmera lenta."""
+        self.slow_motion_duration = duration
+        self.slow_motion_scale = scale
+    
+    def trigger_shake(self, intensity=5, duration=10):
+        """Ativa o tremor da câmera."""
+        self.visible_sprites.shake(intensity, duration)
 
     def draw_bg(self,image):
-        icon_surface = pygame.image.load(image)
+        icon_surface = ResourceManager().load_image(image, convert_alpha=False)
         self.display.blit(icon_surface, [0,0])
     
     def _setup_npcs(self):
         """Setup NPCs with dialogues (example NPCs)."""
-        # Example: Create an NPC at position
-        # You can add NPCs in create_map instead if using tilemap
-        
-        # Register dialogues for NPCs
-        self.dialogue_system.register_dialogue(
-            'village_elder',
-            [
-                "Bem-vindo, viajante!",
-                "Esta terra foi assolada por criaturas das trevas.",
-                "Você deve ser corajoso para estar aqui.",
-                "Cuidado ao explorar as florestas ao norte."
-            ],
-            "Ancião da Vila"
-        )
-        
-        self.dialogue_system.register_dialogue(
-            'merchant',
-            [
-                "Olá! Procurando itens raros?",
-                "Tenho as melhores poções da região!",
-                "Volte quando tiver mais moedas."
-            ],
-            "Mercador"
-        )
+        # Load dialogues from external JSON
+        self.dialogue_system.load_from_json('gameinfo/data/dialogue.json')
     
     def _create_example_npcs(self):
         """Create example NPCs in the world."""
@@ -136,7 +135,7 @@ class Level():
     def check_npc_proximity(self):
         """Check if player is near any NPC."""
         # Don't check while in dialogue or inventory
-        if self.dialogue_system.is_active() or self.inventory_open:
+        if self.state != 'playing':
             return
         
         nearby_npc = None
@@ -263,7 +262,10 @@ class Level():
                                 self.animation_player.create_grass_particle(pos - offset,[self.visible_sprites])
                             target_sprite.kill()
                         else:
-                            target_sprite.get_damage(self.player,attack_sprite.sprite_type)
+                            if target_sprite.get_damage(self.player,attack_sprite.sprite_type):
+                                # EFEITOS DE IMPACTO (Hit Stop + Shake leve) - Só quando acerta de verdade
+                                self.trigger_hit_stop(6)
+                                self.trigger_shake(2, 5)
 
     def damage_player(self,amount,attack_type):
         if self.player.vulnerable:
@@ -273,118 +275,146 @@ class Level():
                 self.player.health = 0
             self.player.vulnerable = False
             self.player.hurt_time = pygame.time.get_ticks()
+            
+            # EFEITOS DE DANO NO PLAYER (Shake forte + Hit stop)
+            self.trigger_shake(8, 12)
+            self.trigger_hit_stop(8)
+            
 			# spawn particles
             self.animation_player.create_particles(attack_type,self.player.rect.center,[self.visible_sprites])
 
     def trigger_death_particles(self,pos,particle_type):
         
         self.animation_player.create_particles(particle_type,pos,self.visible_sprites)
+        
+        # EFEITO DE MORTE (Slow Motion)
+        self.trigger_slow_motion(30, 0.3) # 0.5s (a 60fps) de 30% da velocidade
     
     def add_coin(self,amount):
 
         self.player.coin += amount
 
-    def toggle_inventory(self):
-
-        self.inventory_open = not self.inventory_open
-
-    def toggle_menu(self):
-
-        self.menu_open = not self.menu_open
-
-    def run(self):
+    def run(self, dt=1.0):
+        # 1. Draw World (always visible)
         self.visible_sprites.custom_draw(self.player)
         self.ui.display(self.player)
 
-        # Get events and keys
+        # 2. Check Game Over
+        if self.player.health <= 0:
+            self.state = 'game_over'
+
+        # 3. State Machine Dispatch
+        if self.state == 'paused':
+            # Blocking Menu Call
+            still_open = self.escape_main_menu.display_esc(self)
+            if not still_open:
+                self.state = 'playing'
+            return
+
+        if self.state == 'game_over':
+            # Blocking Death (Reset handled inside? or stuck?)
+            self.death_screen.display_esc()
+            return
+            
+        # 4. Handle Inputs for Non-Blocking States
         events = pygame.event.get()
-        keys = pygame.key.get_pressed()
+        for event in events:
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            
+            # Global State Transitions
+            if event.type == pygame.KEYDOWN:
+                if event.key == InputConfig.get_key('menu'):
+                    if self.state == 'playing':
+                         self.state = 'paused'
+                    elif self.state == 'inventory':
+                         self.state = 'playing'
+                    elif self.state == 'dialogue':
+                         # Optional: Allow escaping dialogue? 
+                         pass 
+
+        # 5. Update based on State
+        if self.state == 'playing':
+            self.update_playing(dt, events)
+        elif self.state == 'inventory':
+            self.update_inventory(events)
+        elif self.state == 'dialogue':
+            self.update_dialogue(events)
+
+    def update_playing(self, dt, events):
         
-        # Track key presses this frame
-        key_i_pressed = False
-        key_esc_pressed = False
-        other_events = []
-        
-        # Process events once
+        # 1. Hit Stop Logic (Congela updates mas processa inputs básicos se necessário)
+        if self.hit_stop_duration > 0:
+            self.hit_stop_duration -= 1
+            return # Pula atualização de movimento, animação, etc.
+
+        # 2. Slow Motion Logic
+        if self.slow_motion_duration > 0:
+            dt *= self.slow_motion_scale
+            self.slow_motion_duration -= 1
+
+        # Input
         for event in events:
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_i:
-                    key_i_pressed = True
-                elif event.key == pygame.K_ESCAPE:
-                    key_esc_pressed = True
+                if event.key == InputConfig.get_key('inventory'):
+                    self.state = 'inventory'
+                elif event.key == InputConfig.get_key('interact'):
+                    # InteractDebounce check?
+                    self.player.try_interact()
+        
+        # Logic
+        self.visible_sprites.update(dt)
+        self.visible_sprites.enemy_update(self.player)
+        self.player_attack_logic()
+        
+        # Dialogue Triggered?
+        if self.dialogue_system.is_active():
+            self.state = 'dialogue'
+            return
+
+        # Interaction Prompt
+        self.check_npc_proximity()
+        if self.player.nearby_npc:
+            npc_screen_pos = self.player.nearby_npc.get_screen_position(
+                self.visible_sprites.offset
+            )
+            self.dialogue_box.draw_interaction_prompt(npc_screen_pos)
+
+    def update_inventory(self, events):
+        self.inventory_ui.draw()
+        
+        keys = pygame.key.get_pressed()
+        for event in events:
+            if event.type == pygame.KEYDOWN:
+                if event.key == InputConfig.get_key('inventory'):
+                    self.state = 'playing'
                 else:
-                    other_events.append(event)
-            else:
-                other_events.append(event)
-        
-        # PRIORITY 1: Handle ESC (highest priority)
-        if key_esc_pressed:
-            if self.inventory_open:
-                self.inventory_open = False
-            elif not self.menu_open:
-                self.menu_open = True
-        
-        # PRIORITY 2: Handle I key (toggle inventory)
-        elif key_i_pressed and not self.menu_open and not self.dialogue_system.is_active():
-            self.inventory_open = not self.inventory_open
-        
-        # PRIORITY 3: Handle active menus
-        if self.menu_open:
-            self.menu_open = self.escape_main_menu.display_esc()
-        elif self.player.health == 0:
-            self.death_screen.display_esc()
-        elif self.inventory_open:
-            # Draw inventory UI
-            self.inventory_ui.draw()
-            
-            # Handle inventory input
-            for event in other_events:
-                if event.type == pygame.KEYDOWN:
                     action = self.inventory_ui.handle_input(keys, event.key)
                     if action == 'use_item':
-                        # Use selected item
                         item_data = self.player.inventory.use_selected_item()
                         if item_data:
                             self.player.use_item(item_data)
-        
-        # PRIORITY 4: Handle dialogue (if no other menu open)
-        elif self.dialogue_system.is_active():
-            # Show dialogue
-            current_msg = self.dialogue_system.get_current_message()
-            if current_msg:
-                self.dialogue_box.draw_dialogue(
-                    current_msg.speaker,
-                    current_msg.text,
-                    show_continue=True
-                )
+
+    def update_dialogue(self, events):
+        if not self.dialogue_system.is_active():
+            self.state = 'playing'
+            return
             
-            # Advance dialogue with SPACE
-            if keys[pygame.K_SPACE]:
-                pygame.time.wait(200)  # Debounce
-                self.advance_dialogue()
+        current_msg = self.dialogue_system.get_current_message()
+        if current_msg:
+            self.dialogue_box.draw_dialogue(
+                current_msg.speaker,
+                current_msg.text,
+                show_continue=True
+            )
         
-        # PRIORITY 5: Normal gameplay
-        else:
-            # Check NPC proximity and show interaction prompt (only if inventory closed)
-            if not self.inventory_open:
-                self.check_npc_proximity()
-                
-                if self.player.nearby_npc:
-                    npc_screen_pos = self.player.nearby_npc.get_screen_position(
-                        self.visible_sprites.offset
-                    )
-                    self.dialogue_box.draw_interaction_prompt(npc_screen_pos)
-                    
-                    # Try to interact with E key
-                    if keys[pygame.K_e]:
-                        pygame.time.wait(200)  # Debounce
-                        self.player.try_interact()
-        
-        # Only update game if not in any menu or dialogue
-        if not self.dialogue_system.is_active() and not self.inventory_open and not self.menu_open and self.player.health > 0:
-            self.visible_sprites.update()
-            self.visible_sprites.enemy_update(self.player)
-            self.player_attack_logic()
+        keys = pygame.key.get_pressed()
+        if keys[InputConfig.get_key('dialogue_advance')]:
+             # Simple debounce needed or handled by dialogue system?
+             # Previous code had: pygame.time.wait(200)
+             pygame.time.wait(200)
+             self.advance_dialogue()
 
 class YSortCameraGroup(pygame.sprite.Group):
     def __init__(self):
@@ -395,16 +425,32 @@ class YSortCameraGroup(pygame.sprite.Group):
         self.half_width = self.display_surface.get_size()[0] // 2
         self.half_height = self.display_surface.get_size()[1] // 2
         self.offset = pygame.math.Vector2()
+        
+        # Shake config
+        self.shake_amount = 0
+        self.shake_duration = 0
     
         # criar chão
         self.floor_surf = pygame.image.load('gameinfo/graphics/tilemap/ground.png').convert()
         self.floor_rect = self.floor_surf.get_rect(topleft=(0, 0))
+
+    def shake(self, intensity=5, duration=10):
+        self.shake_amount = intensity
+        self.shake_duration = duration
 
     def custom_draw(self, player):
         
         # ajustar o deslocamento
         self.offset.x = player.rect.centerx - self.half_width
         self.offset.y = player.rect.centery - self.half_height
+
+        # Aplicar Screen Shake
+        if self.shake_duration > 0:
+            self.shake_duration -= 1
+            x_offset = randint(-self.shake_amount, self.shake_amount)
+            y_offset = randint(-self.shake_amount, self.shake_amount)
+            self.offset.x += x_offset
+            self.offset.y += y_offset
 
         # desenhar o chão
         floor_offset_pos = self.floor_rect.topleft - self.offset
