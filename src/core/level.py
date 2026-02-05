@@ -20,6 +20,8 @@ from src.ui.menus.escape_menu import *
 from src.ui.screens.death_screen import *
 from src.systems.save_system import SaveSystem
 from src.core.input_config import InputConfig
+from src.systems.atmosphere import DayNightCycle, WeatherSystem, PostProcessing
+from src.systems.camera import YSortCameraGroup
 
 class Level():
     def __init__(self):
@@ -41,9 +43,15 @@ class Level():
         self.title_ver = True
 
         # setup de grupo de sprites
-        self.visible_sprites = YSortCameraGroup()
+        self.visible_sprites = YSortCameraGroup('gameinfo/graphics/tilemap/ground.png')
         self.obstacle_sprites = pygame.sprite.Group()
         self.npc_sprites = pygame.sprite.Group()
+        
+        # Atmosphere
+        self.day_night = DayNightCycle()
+        self.weather = WeatherSystem()
+        # self.post_processing = PostProcessing() # Disabled: Using GPU Shaders
+        self.weather.set_weather("rain") # Enable rain by default for demo
     
         # SPRITES DE ATAQUE
         self.current_attack = None
@@ -92,7 +100,7 @@ class Level():
     
     def trigger_shake(self, intensity=5, duration=10):
         """Ativa o tremor da câmera."""
-        self.visible_sprites.shake(intensity, duration)
+        self.visible_sprites.camera.shake(intensity, duration)
 
     def draw_bg(self,image):
         icon_surface = ResourceManager().load_image(image, convert_alpha=False)
@@ -267,6 +275,11 @@ class Level():
                                 self.trigger_hit_stop(6)
                                 self.trigger_shake(2, 5)
 
+                                # PLAYER RECOIL (Knockback)
+                                dir_vector = pygame.math.Vector2(self.player.rect.center) - pygame.math.Vector2(target_sprite.rect.center)
+                                if dir_vector.magnitude() > 0:
+                                    self.player.recoil = dir_vector.normalize() * 10 # Strength of kockback
+
     def damage_player(self,amount,attack_type):
         if self.player.vulnerable:
             if self.player.health > 0:
@@ -295,11 +308,24 @@ class Level():
         self.player.coin += amount
 
     def run(self, dt=1.0):
-        # 1. Draw World (always visible)
-        self.visible_sprites.custom_draw(self.player)
-        self.ui.display(self.player)
+        # 1. Background Logic
+        self.day_night.update()
+        self.weather.update()
 
-        # 2. Check Game Over
+        # 2. Draw World (always visible)
+        self.visible_sprites.custom_draw(self.player)
+        
+        # 3. Draw Atmosphere
+        self.weather.draw()
+        self.day_night.draw()
+        
+        # 3.5 Post Processing (Vignette + Tilt Shift)
+        # self.post_processing.draw() # Disabled: Using GPU Shaders
+
+        # 4. Draw UI
+        self.ui.display(self.player, self.visible_sprites)
+
+        # 5. Check Game Over
         if self.player.health <= 0:
             self.state = 'game_over'
 
@@ -377,7 +403,7 @@ class Level():
         self.check_npc_proximity()
         if self.player.nearby_npc:
             npc_screen_pos = self.player.nearby_npc.get_screen_position(
-                self.visible_sprites.offset
+                self.visible_sprites.camera.offset
             )
             self.dialogue_box.draw_interaction_prompt(npc_screen_pos)
 
@@ -416,52 +442,5 @@ class Level():
              pygame.time.wait(200)
              self.advance_dialogue()
 
-class YSortCameraGroup(pygame.sprite.Group):
-    def __init__(self):
-        
-        # setup geral
-        super().__init__()
-        self.display_surface = pygame.display.get_surface()
-        self.half_width = self.display_surface.get_size()[0] // 2
-        self.half_height = self.display_surface.get_size()[1] // 2
-        self.offset = pygame.math.Vector2()
-        
-        # Shake config
-        self.shake_amount = 0
-        self.shake_duration = 0
-    
-        # criar chão
-        self.floor_surf = pygame.image.load('gameinfo/graphics/tilemap/ground.png').convert()
-        self.floor_rect = self.floor_surf.get_rect(topleft=(0, 0))
 
-    def shake(self, intensity=5, duration=10):
-        self.shake_amount = intensity
-        self.shake_duration = duration
-
-    def custom_draw(self, player):
-        
-        # ajustar o deslocamento
-        self.offset.x = player.rect.centerx - self.half_width
-        self.offset.y = player.rect.centery - self.half_height
-
-        # Aplicar Screen Shake
-        if self.shake_duration > 0:
-            self.shake_duration -= 1
-            x_offset = randint(-self.shake_amount, self.shake_amount)
-            y_offset = randint(-self.shake_amount, self.shake_amount)
-            self.offset.x += x_offset
-            self.offset.y += y_offset
-
-        # desenhar o chão
-        floor_offset_pos = self.floor_rect.topleft - self.offset
-        self.display_surface.blit(self.floor_surf, floor_offset_pos)
-
-        for sprite in sorted(self.sprites(), key=lambda sprite: sprite.rect.centery):
-            offset_pos = sprite.rect.topleft - self.offset
-            self.display_surface.blit(sprite.image, offset_pos)
-
-    def enemy_update(self,player):
-        enemy_sprites = [sprite for sprite in self.sprites() if hasattr(sprite,'sprite_type') and sprite.sprite_type == 'enemy']
-        for enemy in enemy_sprites:
-            enemy.enemy_update(player)
-        
+# YSortCameraGroup logic moved to src/systems/camera.py

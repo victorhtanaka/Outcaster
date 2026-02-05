@@ -29,12 +29,16 @@ class Player(Entity):
         super().__init__(groups)
         self.image = pygame.image.load('gameinfo/graphics/player/down/down_0.png').convert_alpha()
         self.rect = self.image.get_rect(topleft=pos)
-        self.hitbox = self.rect.inflate(-6,HITBOX_OFFSET['player'])
+        # Reduced width (-20) to make movement smoother near walls
+        self.hitbox = self.rect.inflate(-20,HITBOX_OFFSET['player'])
         self.dialogue_box = DialogueBox()
 
         # IMPORTAR PLAYER ASSETS
         self.import_player_assets()
         self.status = 'down'
+        
+        # Knockback/Recoil
+        self.recoil = pygame.math.Vector2()
 
         # Movimento e ataque
         self.attacking = False
@@ -323,9 +327,33 @@ class Player(Entity):
         self.get_status()
         self.animate()
         
-        speed = self.speed
+        # Input speed
+        move_speed = self.speed
+        
+        # Apply Recoil Decay
+        if self.recoil.magnitude() > 0:
+            self.recoil *= 0.8 # Decay factor
+            if self.recoil.magnitude() < 0.5:
+                self.recoil = pygame.math.Vector2()
+        
+        # Combine Input + Recoil
+        # If recoiling, add recoil vector to direction
+        if self.recoil.magnitude() > 0:
+            # We treat recoil as an additional velocity
+            # Since move() takes a direction and speed scalar, we need to compose them
+            # Normal movement vector
+            input_vec = self.direction.normalize() * move_speed if self.direction.magnitude() > 0 else pygame.math.Vector2()
+            
+            # Combined vector
+            final_vec = input_vec + self.recoil
+            
+            # Update direction and speed for move()
+            if final_vec.magnitude() > 0:
+                self.direction = final_vec.normalize()
+                move_speed = final_vec.magnitude()
+        
         if self.dashing:
-            speed *= self.dash_speed
+            move_speed *= self.dash_speed
             
             # Spawn Ghost Effect
             current_time = pygame.time.get_ticks()
@@ -333,7 +361,7 @@ class Player(Entity):
                 GhostSprite(self.rect.center, self.image, self.groups())
                 self.last_dash_effect_time = current_time
         
-        self.move(speed, dt)
+        self.move(move_speed, dt)
         self.energy_recovery()
     
     def set_nearby_npc(self, npc):

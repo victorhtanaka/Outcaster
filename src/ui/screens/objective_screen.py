@@ -28,9 +28,6 @@ class ObjectiveScreenOp(ObjectiveScreen):
         self.optionsx, self.optionsy = self.mid_w, self.mid_h + 80
 
     def display_objective(self):
-        self.draw_background('gameinfo/graphics/ui/escape.png')
-        self.draw_text("Objetivo", 70, self.startx, self.starty)
-        self.draw_text("Mate todos os inimigos", 50, self.optionsx, self.optionsy)
-        pygame.display.update()
-        sleep(4)
-        return False  # Objetivo foi mostrado, agora inicia o jogo
+        # This old blocking method is incompatible with the new render loop.
+        # We will disable the splash screen for now to prevent crashes.
+        return False  # Skip objective screen immediately

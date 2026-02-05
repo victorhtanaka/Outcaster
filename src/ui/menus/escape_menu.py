@@ -1,6 +1,9 @@
 import pygame, sys
+import math
+import random
 from config.settings import *
 from src.core.resource_manager import ResourceManager
+from src.core.input_config import InputConfig
 
 class EscapeMenu():
     def __init__(self):
@@ -27,8 +30,19 @@ class EscapeMenu():
         self.cursor_s.play()
 
     def blit_screen(self):
-        self.display.blit(self.display, (0, 0))
-        pygame.display.update()
+        # OpenGL Compatible Render
+        # We need access to the Game instance to use its shader pipeline
+        # But this class doesn't hold a reference to 'Level' or 'Game' easily.
+        # However, check caller: display_esc(self, level) receives level.
+        # But this function doesn't.
+        
+        # Quick fix: The caller 'Level' instance usually manages the drawing.
+        # Or we can flip?
+        # pygame.display.flip() IS allowed in OpenGL double-buffered context.
+        # pygame.display.update() IS NOT.
+        
+        # When in OpenGL mode, we must Swap Buffers (flip).
+        pygame.display.flip() 
         self.reset_keys()
 
     def draw_text(self, text,size, x, y ):
@@ -62,19 +76,20 @@ class EscapeMenu():
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
+                # Use InputConfig or manual checks that match main menu
+                if event.key == InputConfig.get_key('dialogue_advance') or event.key == pygame.K_RETURN:
                     self.START_KEY = True
-                if event.key == pygame.K_BACKSPACE:
+                if event.key == pygame.K_BACKSPACE or event.key == pygame.K_ESCAPE:
                     self.BACK_KEY = True
-                if event.key == pygame.K_DOWN:
+                if event.key == InputConfig.get_key('move_down') or event.key == pygame.K_DOWN:
                     self.DOWN_KEY = True
-                if event.key == pygame.K_UP:
+                if event.key == InputConfig.get_key('move_up') or event.key == pygame.K_UP:
                     self.UP_KEY = True
-                if event.key == pygame.K_LEFT:
+                if event.key == InputConfig.get_key('move_left') or event.key == pygame.K_LEFT:
                     self.LEFT_KEY = True
-                if event.key == pygame.K_RIGHT:
+                if event.key == InputConfig.get_key('move_right') or event.key == pygame.K_RIGHT:
                     self.RIGHT_KEY = True
-    
+
     def reset_keys(self):
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY, self.LEFT_KEY, self.RIGHT_KEY = False, False, False, False, False, False
 
@@ -82,17 +97,116 @@ class EscapeMenu():
         icon_surface = pygame.image.load(image)
         self.display.blit(icon_surface, [0,0])
 
-    def draw_background(self,bg):
-        self.draw_bg(bg)
+    def draw_background(self, bg):
+        # Draw semi-transparent overlay
+        s = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+        s.fill((5, 5, 8, 240)) # Darker background for contrast
+        self.display.blit(s, (0,0))
+        
+        t = pygame.time.get_ticks() / 1000.0
+        cx, cy = self.mid_w, self.mid_h
+
+        # Initialize random chars if needed
+        if not hasattr(self, 'rune_text_bg'):
+             chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+             self.rune_text_bg = "".join(random.choices(chars, k=60))
+
+        # Define Frame size first
+        rw, rh = 600, 500  # Frame size
+        rx, ry = cx - rw//2, cy - rh//2 
+
+        # 1. Starry Particles Background (Fireflies)
+        if not hasattr(self, 'particles'):
+            self.particles = []
+            for _ in range(50):
+                self.particles.append({
+                    'x': random.randint(0, WIDTH),
+                    'y': random.randint(0, HEIGHT),
+                    'size': random.randint(1, 3),
+                    'phase': random.uniform(0, math.pi * 2),
+                    'speed_y': random.uniform(-10, -30), # Float up
+                    'sway_freq': random.uniform(1, 3),
+                    'sway_amp': random.uniform(5, 15)
+                })
+
+        # Update and Draw Particles
+        for p in self.particles:
+            # Vertical Movement
+            # Using t to calculate position instead of updating state to keep it stateless between frames if needed,
+            # but simpler to just use time based offset or simple update
+            # Let's use time based to be consistent with 't' usage
+            
+            # Base position scrolling up
+            dy = t * p['speed_y'] 
+            curr_y = (p['y'] + dy) % HEIGHT
+            
+            # Horizontal Sway
+            dx = math.sin(t * p['sway_freq'] + p['phase']) * p['sway_amp']
+            curr_x = (p['x'] + dx) % WIDTH
+            
+            # Twinkle (Alpha)
+            brightness = (math.sin(t * 3 + p['phase']) + 1) / 2 # 0 to 1
+            alpha = int(brightness * 200 + 55) # 55 to 255
+            
+            # Draw
+            # Need a surface for alpha blinking
+            surf = pygame.Surface((p['size']*2, p['size']*2), pygame.SRCALPHA)
+            pygame.draw.circle(surf, (255, 255, 255, alpha), (p['size'], p['size']), p['size'])
+            self.display.blit(surf, (curr_x, curr_y))
+
+
+        # 2. Fancy Border Design
+        
+        # Colors
+        corner_color = (120, 120, 150)
+        frame_color = (50, 50, 70)
+        thick = 3
+        corner_len = 50
+
+        # Draw main thin frame
+        pygame.draw.rect(self.display, frame_color, (rx, ry, rw, rh), 1)
+        # Inner frame offset
+        pygame.draw.rect(self.display, frame_color, (rx+10, ry+10, rw-20, rh-20), 1)
+
+        # Draw decorative corners
+        # Top-Left
+        pygame.draw.line(self.display, corner_color, (rx, ry), (rx + corner_len, ry), thick)
+        pygame.draw.line(self.display, corner_color, (rx, ry), (rx, ry + corner_len), thick)
+        pygame.draw.circle(self.display, corner_color, (rx, ry), 4)
+
+        # Top-Right
+        pygame.draw.line(self.display, corner_color, (rx+rw, ry), (rx+rw - corner_len, ry), thick)
+        pygame.draw.line(self.display, corner_color, (rx+rw, ry), (rx+rw, ry + corner_len), thick)
+        pygame.draw.circle(self.display, corner_color, (rx+rw, ry), 4)
+
+        # Bottom-Left
+        pygame.draw.line(self.display, corner_color, (rx, ry+rh), (rx + corner_len, ry+rh), thick)
+        pygame.draw.line(self.display, corner_color, (rx, ry+rh), (rx, ry+rh - corner_len), thick)
+        pygame.draw.circle(self.display, corner_color, (rx, ry+rh), 4)
+
+        # Bottom-Right
+        pygame.draw.line(self.display, corner_color, (rx+rw, ry+rh), (rx+rw - corner_len, ry+rh), thick)
+        pygame.draw.line(self.display, corner_color, (rx+rw, ry+rh), (rx+rw, ry+rh - corner_len), thick)
+        pygame.draw.circle(self.display, corner_color, (rx+rw, ry+rh), 4)
+        
+        # 3. Rotating geometrical element at corners
+        for i, pos in enumerate([(rx, ry), (rx+rw, ry), (rx+rw, ry+rh), (rx, ry+rh)]):
+            rot_offset = i * 90
+            local_t = t * 50 + rot_offset
+            # Small orbit
+            ox = pos[0] + math.cos(math.radians(local_t)) * 10
+            oy = pos[1] + math.sin(math.radians(local_t)) * 10
+            pygame.draw.circle(self.display, (150, 150, 200), (ox, oy), 2)
 
 class EscapeMainMenu(EscapeMenu):
     def __init__(self):
         EscapeMenu.__init__(self)
         self.state = "Voltar ao Jogo"
-        self.startx, self.starty = self.mid_w, self.mid_h - 70
-        self.savex, self.savey = self.mid_w, self.mid_h - 20
-        self.optionsx, self.optionsy = self.mid_w, self.mid_h + 30
-        self.sairx, self.sairy = self.mid_w, self.mid_h + 80
+        # Adjusted spacing
+        self.startx, self.starty = self.mid_w, self.mid_h - 60
+        self.savex, self.savey = self.mid_w, self.mid_h
+        self.optionsx, self.optionsy = self.mid_w, self.mid_h + 60
+        self.sairx, self.sairy = self.mid_w, self.mid_h + 120
 
         self.cursor_rect.midtop = (self.startx + self.offset, self.starty)
         self.cursor_rectR.midtop = (self.startx - self.offsetR, self.starty)
@@ -113,7 +227,10 @@ class EscapeMainMenu(EscapeMenu):
                 save_feedback_timer = 60
                 self.exit_state = None
 
-            self.draw_background('gameinfo/graphics/ui/escape.png')
+            self.draw_background(None) # Use procedural bg
+            
+            self.draw_text("PAUSE", 60, self.mid_w, self.mid_h - 180)
+            
             self.draw_text("Voltar ao Jogo", 35, self.startx, self.starty)
             
             if save_feedback_timer > 0:
@@ -350,7 +467,7 @@ class EscapeQuitMenu(EscapeMenu):
         while self.run_display:
             self.check_events()
             self.check_input()
-            self.draw_background('gameinfo/graphics/ui/escape.png')
+            self.draw_background(None)
             self.draw_text("Desejar sair do jogo?", 35, self.startx, self.starty)
             self.draw_text("Sim", 35, self.optionsx, self.optionsy)
             self.draw_text("Não", 35, self.creditsx, self.creditsy)
@@ -412,7 +529,7 @@ class EscapeOptionsMenu(EscapeMenu):
             self.ast_s = "*" * (int(self.sfx))
             self.check_events()
             self.check_input_op()
-            self.draw_background('gameinfo/graphics/ui/options.png')
+            self.draw_background(None)
             self.draw_text("Volume", 45, WIDTH / 2, HEIGHT / 2 - 100)
             self.draw_text("Música", 35, self.music_volx, self.music_voly)
             self.draw_text(f"{self.music} {self.ast_m}", 30, self.volx, self.voly + 85)
@@ -499,5 +616,20 @@ class EscapeControlsMenu(EscapeMenu):
                 self.menu_button_sound(self.menu_enter_sound)
             if self.BACK_KEY:
                 self.run_display = False
-            self.blit_screen()
+            
+            self.draw_background(None)
+            self.draw_text("Controles", 45, WIDTH / 2, HEIGHT / 2 - 150)
+            
+            # Simple controls list
+            controls_text = [
+                "Move: WASD / Arrows",
+                "Attack: Space / Z",
+                "Dash: Shift / C",
+                "Magic: E / X",
+                "Inventory: Tab"
+            ]
+            
+            for i, line in enumerate(controls_text):
+                self.draw_text(line, 25, WIDTH / 2, HEIGHT / 2 - 50 + (i * 35))
+                
             self.blit_screen()

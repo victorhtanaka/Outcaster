@@ -27,12 +27,54 @@ class Game:
 
     def _init_display(self):
         """Initialize display and clock."""
-        self.screen = pygame.display.set_mode((WIDTH, HEIGHT), flags=pygame.SCALED, vsync=1)
+        # Try to use OpenGL
+        try:
+            import moderngl
+            self.use_shaders = True
+            # OPENGL | DOUBLEBUF are required for ModernGL
+            self.screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.OPENGL | pygame.DOUBLEBUF | pygame.SCALED, vsync=1)
+            
+            # --- SHADER SETUP ---
+            from src.systems.renderer import ShaderRenderer
+            self.shader_renderer = ShaderRenderer(WIDTH, HEIGHT)
+            
+            # --- VIRTUAL CANVAS ---
+            # We create a software surface that the game will draw to.
+            # We then MONKEY PATCH pygame.display.get_surface to return this canvas.
+            # This ensures all game logic (Level, UI) draws to our texture, not the window.
+            self.canvas = pygame.Surface((WIDTH, HEIGHT))
+            self.display = self.canvas # Alias for self.display use in this class
+            
+            # Monkey Patch
+            self._original_get_surface = pygame.display.get_surface
+            self._original_flip = pygame.display.flip
+            self._original_update = pygame.display.update
+            
+            # Canvas Patch
+            pygame.display.get_surface = lambda: self.canvas
+            
+            # Render Pipeline Patch
+            # This ensures that ANY code calling display.flip() or update()
+            # automatically triggers the Shader Render first.
+            def render_pipeline(*args, **kwargs):
+                self.shader_renderer.render(self.display)
+                self._original_flip() # Perform the actual OpenGL Swap
+            
+            pygame.display.flip = render_pipeline
+            pygame.display.update = render_pipeline
+            
+        except ImportError:
+            print("ModernGL not found. Using standard software rendering.")
+            self.use_shaders = False
+            self.screen = pygame.display.set_mode((WIDTH, HEIGHT), flags=pygame.SCALED, vsync=1)
+            self.display = self.screen # Alias display to screen so render logic works
+            self.canvas = self.screen  # For compatibility
+
         pygame.display.set_caption('Outcaster')
         self.clock = pygame.time.Clock()
-        self.display = pygame.Surface((WIDTH, HEIGHT))
 
     def _init_game_state(self):
+
         """Initialize game state variables."""
         self.running = True
         self.playing = False
@@ -137,12 +179,22 @@ class Game:
     def render(self):
         """Render game graphics."""
         if not self.objective:
-            # Level renders directly to screen
+            # Level renders to self.display (alias canvas) automatically via monkey patch
             pass
         else:
-            # Menu and objective use display surface
-            self.screen.blit(self.display, (0, 0))
-        pygame.display.update()
+            # Menu and objective use self.display
+            # We don't blit to screen yet in OpenGL mode
+            pass
+        
+        # FINAL RENDER
+        if self.use_shaders:
+            # Render pipeline is handled by the monkey-patched pygame.display.flip()
+            # which calls shader_renderer.render() internally.
+            pygame.display.flip() 
+        else:
+            # Software Fallback
+            # Drawing happens directly to self.screen (which self.display aliases)
+            pygame.display.update()
 
     def game_loop(self):
         """Main game loop."""

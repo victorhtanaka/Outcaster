@@ -27,6 +27,8 @@ class Menu:
         cursor_s.play()
 
     def draw_cursor(self):
+        # Use game.display, not game.draw_icon which assumes direct blit logic if modified
+        # But wait, game.draw_icon uses self.display.blit, which is correct (it blits to Canvas)
         self.game.draw_icon(self.cursor_rect.x, self.cursor_rect.y, 'gameinfo/graphics/ui/cursor.png')
 
     def draw_cursorR(self):
@@ -34,6 +36,83 @@ class Menu:
 
     def draw_background(self, bg):
         self.game.draw_bg(bg)
+
+    def draw_particle_background(self):
+        # Draw semi-transparent overlay
+        s = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+        s.fill((5, 5, 8, 240)) # Darker background for contrast
+        self.game.display.blit(s, (0,0))
+        
+        t = pygame.time.get_ticks() / 1000.0
+        
+        # 1. Starry Particles Background (Fireflies)
+        if not hasattr(self, 'particles'):
+            self.particles = []
+            for _ in range(50):
+                self.particles.append({
+                    'x': random.randint(0, WIDTH),
+                    'y': random.randint(0, HEIGHT),
+                    'size': random.randint(1, 3),
+                    'phase': random.uniform(0, math.pi * 2),
+                    'speed_y': random.uniform(-10, -30), # Float up
+                    'sway_freq': random.uniform(1, 3),
+                    'sway_amp': random.uniform(5, 15)
+                })
+
+        # Update and Draw Particles
+        for p in self.particles:
+            # Vertical Movement
+            dy = t * p['speed_y'] 
+            curr_y = (p['y'] + dy) % HEIGHT
+            
+            # Horizontal Sway
+            dx = math.sin(t * p['sway_freq'] + p['phase']) * p['sway_amp']
+            curr_x = (p['x'] + dx) % WIDTH
+            
+            # Twinkle (Alpha)
+            brightness = (math.sin(t * 3 + p['phase']) + 1) / 2 # 0 to 1
+            alpha = int(brightness * 200 + 55) # 55 to 255
+            
+            # Draw
+            surf = pygame.Surface((p['size']*2, p['size']*2), pygame.SRCALPHA)
+            pygame.draw.circle(surf, (255, 255, 255, alpha), (p['size'], p['size']), p['size'])
+            self.game.display.blit(surf, (curr_x, curr_y))
+
+        # 2. Fancy Border Design
+        cx, cy = self.mid_w, self.mid_h
+        rw, rh = 600, 500  # Frame size
+        rx, ry = cx - rw//2, cy - rh//2 
+        
+        # Colors
+        corner_color = (120, 120, 150)
+        frame_color = (50, 50, 70)
+        thick = 3
+        corner_len = 50
+
+        # Draw main thin frame
+        pygame.draw.rect(self.game.display, frame_color, (rx, ry, rw, rh), 1)
+        pygame.draw.rect(self.game.display, frame_color, (rx+10, ry+10, rw-20, rh-20), 1)
+
+        # Draw decorative corners
+        # Top-Left
+        pygame.draw.line(self.game.display, corner_color, (rx, ry), (rx + corner_len, ry), thick)
+        pygame.draw.line(self.game.display, corner_color, (rx, ry), (rx, ry + corner_len), thick)
+        pygame.draw.circle(self.game.display, corner_color, (rx, ry), 4)
+
+        # Top-Right
+        pygame.draw.line(self.game.display, corner_color, (rx+rw, ry), (rx+rw - corner_len, ry), thick)
+        pygame.draw.line(self.game.display, corner_color, (rx+rw, ry), (rx+rw, ry + corner_len), thick)
+        pygame.draw.circle(self.game.display, corner_color, (rx+rw, ry), 4)
+
+        # Bottom-Left
+        pygame.draw.line(self.game.display, corner_color, (rx, ry+rh), (rx + corner_len, ry+rh), thick)
+        pygame.draw.line(self.game.display, corner_color, (rx, ry+rh), (rx, ry+rh - corner_len), thick)
+        pygame.draw.circle(self.game.display, corner_color, (rx, ry+rh), 4)
+
+        # Bottom-Right
+        pygame.draw.line(self.game.display, corner_color, (rx+rw, ry+rh), (rx+rw - corner_len, ry+rh), thick)
+        pygame.draw.line(self.game.display, corner_color, (rx+rw, ry+rh), (rx+rw, ry+rh - corner_len), thick)
+        pygame.draw.circle(self.game.display, corner_color, (rx+rw, ry+rh), 4)
 
     def draw_text_hover(self, text, size, x, y, color_normal='white', color_hover='yellow'):
         """Draw text that changes color on hover and returns rect and hover state."""
@@ -53,9 +132,10 @@ class Menu:
         return rect, is_hovered
 
     def blit_screen(self):
-        self.game.screen.blit(self.game.display, (0, 0))
-        pygame.display.update()
+        # self.game.screen.blit(self.game.display, (0, 0)) # Removed direct blit to screen
+        self.game.render() # Use game render method which handles OpenGL/Software
         self.game.reset_keys()
+
 
 
 class MainMenu(Menu):
@@ -182,6 +262,9 @@ class MainMenu(Menu):
             if pygame.mouse.get_pressed()[0]: # Left click
                 mouse_clicked = True
 
+            # Draw Title
+            self.game.draw_text("OUTCASTER", 120, self.mid_w, self.mid_h - 100)
+
             # Draw options and handle mouse interaction
             for opt in self.options:
                 x, y = self.mid_w, self.mid_h + opt["y_offset"]
@@ -264,7 +347,7 @@ class QuitMenu(Menu):
         while self.run_display:
             self.game.check_events()
             self.check_input()
-            self.draw_background('gameinfo/graphics/ui/main_menu.png')
+            self.draw_particle_background()
             self.game.draw_text("Deseja sair do jogo?", 35, self.mid_w, self.mid_h)
             
             mouse_clicked = False
@@ -347,7 +430,7 @@ class OptionsMenu(Menu):
             self.ast_s = "*" * int(self.sfx)
             self.check_input()
             
-            self.draw_background('gameinfo/graphics/ui/options.png')
+            self.draw_particle_background()
             self.game.draw_text("Volume", 45, self.mid_w, self.mid_h - 150)
             
             # Interactive elements
@@ -440,7 +523,7 @@ class CreditsMenu(Menu):
                 self.game.curr_menu = self.game.main_menu
                 self.run_display = False
                 continue
-            self.draw_background('gameinfo/graphics/ui/credits.png')
+            self.draw_particle_background()
             self.game.draw_text('Victor Hideyuki Tanaka', 35, WIDTH / 2, HEIGHT / 2 - 120)
             self.game.draw_text('Yan Ferreira David', 35, WIDTH / 2, HEIGHT / 2 - 70)
             self.game.draw_text('Matheus Machado Pereira', 35, WIDTH / 2, HEIGHT / 2 - 20)
@@ -551,8 +634,7 @@ class ControlsMenu(Menu):
                 continue
             
             # Draw
-            # self.draw_background('gameinfo/graphics/ui/keybinds.png')
-            self.draw_generated_background()
+            self.draw_particle_background()
             
             # Title
             self.game.draw_text("Configuracao de Teclas", 40, self.mid_w, self.mid_h - 250)

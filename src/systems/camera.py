@@ -12,11 +12,31 @@ class Camera:
         self.offset = pygame.math.Vector2()
         self.half_width = width // 2
         self.half_height = height // 2
-    
+        self.smooth_speed = 0.1
+        
+        # Shake
+        self.shake_amount = 0
+        self.shake_duration = 0
+
+    def shake(self, intensity=5, duration=10):
+        self.shake_amount = intensity
+        self.shake_duration = duration
+
     def center_on(self, target_rect: pygame.Rect):
-        """Center camera on a target."""
-        self.offset.x = target_rect.centerx - self.half_width
-        self.offset.y = target_rect.centery - self.half_height
+        """Center camera on a target with smoothing and shake."""
+        target_x = target_rect.centerx - self.half_width
+        target_y = target_rect.centery - self.half_height
+        
+        self.offset.x += (target_x - self.offset.x) * self.smooth_speed
+        self.offset.y += (target_y - self.offset.y) * self.smooth_speed
+        
+        if self.shake_duration > 0:
+            self.shake_duration -= 1
+            import random
+            x_offset = random.randint(-self.shake_amount, self.shake_amount)
+            y_offset = random.randint(-self.shake_amount, self.shake_amount)
+            self.offset.x += x_offset
+            self.offset.y += y_offset
     
     def apply(self, rect: pygame.Rect) -> pygame.Rect:
         """Apply camera offset to a rect."""
