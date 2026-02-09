@@ -57,11 +57,13 @@ class Enemy(Entity):
 
 		# AI - Pathfinding e evasão de obstáculos
 		self.stuck_time = 0
-		self.stuck_threshold = 60  # frames
+		self.stuck_threshold = 20  # frames
 		self.last_pos = pygame.math.Vector2(self.rect.center)
 		self.stuck_directions = []  # Direções bloqueadas
 		self.ai_update_timer = 0
 		self.ai_update_frequency = 10  # Atualizar IA a cada 10 frames
+		self.escape_timer = 0
+		self.escape_direction = pygame.math.Vector2()
 
 	def import_graphics(self,name):
 		self.animations = {'idle':[],'move':[],'attack':[]}
@@ -145,17 +147,18 @@ class Enemy(Entity):
 		elif self.status == 'move':
 			player_direction = self.get_player_distance_direction(player)[1]
 			
-			# Verificar colisão frontal
-			if self._check_collision_ahead(player_direction):
-				# Se há obstáculo, buscar caminho alternativo
-				self.direction = self._get_alternative_direction(player_direction)
+			if self.escape_timer > 0:
+				self.escape_timer -= 1
+				self.direction = self.escape_direction
 			else:
 				self.direction = player_direction
-				self.stuck_time = 0  # Reset se conseguir se mover
-		
-			# Se detectar que está preso, mudar comportamento
-			if self._detect_stuck():
-				self.direction = self._get_alternative_direction(player_direction)
+				
+				# Se detectar que está preso, tentar liberar
+				if self._detect_stuck():
+					self.escape_direction = self._get_alternative_direction(player_direction)
+					self.direction = self.escape_direction
+					self.escape_timer = 30  # Manter direção de fuga para sair do obstáculo
+					self.stuck_time = 0
 		else:
 			self.direction = pygame.math.Vector2()
 

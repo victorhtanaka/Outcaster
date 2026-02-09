@@ -45,27 +45,7 @@ class ShaderRenderer:
                 void main() {
                     vec2 uv = v_text;
                     
-                    // --- Tilt Shift Blur (Vertical only for speed) ---
-                    float v_blur = smoothstep(0.25, 0.0, uv.y) + smoothstep(0.75, 1.0, uv.y);
-                    
                     vec4 color_source = texture(tex, uv);
-                    
-                    if (v_blur > 0.01) {
-                        float blur_size = 0.005 * v_blur; 
-                        vec4 sum = vec4(0.0);
-                        float total_w = 0.0;
-                        
-                        // 9-sample blur
-                        for(float x = -1.0; x <= 1.0; x += 1.0) {
-                            for(float y = -1.0; y <= 1.0; y += 1.0) {
-                                float weight = 1.0 - abs(x) * 0.5; // simple weight
-                                vec4 s = texture(tex, uv + vec2(x * blur_size, y * blur_size));
-                                sum += s * weight;
-                                total_w += weight;
-                            }
-                        }
-                        color_source = sum / total_w;
-                    }
 
                     // --- Vignette ---
                     vec2 center = uv - 0.5;

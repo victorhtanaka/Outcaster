@@ -33,28 +33,9 @@ class PostProcessing:
         # Use simple subtraction: Current Alpha - Mask Alpha
         self.vignette_surf.blit(final_mask, (0,0), special_flags=pygame.BLEND_RGBA_SUB)
 
-        # --- Tilt Shift Setup ---
-        self.blur_amount = 0.15 # 15% of screen top/bottom
-        blur_h = int(HEIGHT * self.blur_amount)
-        self.top_rect = pygame.Rect(0, 0, WIDTH, blur_h)
-        self.bot_rect = pygame.Rect(0, HEIGHT - blur_h, WIDTH, blur_h)
-
     def draw(self):
-        # 1. Tilt Shift (Blur Top/Bot)
-        # This gives a miniature/focus effect
-        self._blur_area(self.top_rect)
-        self._blur_area(self.bot_rect)
-        
-        # 2. Vignette
+        # Vignette
         self.display_surface.blit(self.vignette_surf, (0,0))
-
-    def _blur_area(self, rect):
-        """Blurs a specific rectangle of the screen."""
-        sub = self.display_surface.subsurface(rect)
-        # Cheap blur using scaling
-        small = pygame.transform.smoothscale(sub, (rect.width // 10, rect.height // 10))
-        large = pygame.transform.smoothscale(small, (rect.width, rect.height))
-        self.display_surface.blit(large, rect)
 
 
 class DayNightCycle:

@@ -32,7 +32,13 @@ class Game:
             import moderngl
             self.use_shaders = True
             # OPENGL | DOUBLEBUF are required for ModernGL
-            self.screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.OPENGL | pygame.DOUBLEBUF | pygame.SCALED, vsync=1)
+            # NOFRAME creates borderless window, positioned at 0,0 for fullscreen windowed mode
+            self.screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.OPENGL | pygame.DOUBLEBUF | pygame.NOFRAME, vsync=1)
+            
+            # Position window at top-left corner for fullscreen windowed effect
+            import ctypes
+            hwnd = pygame.display.get_wm_info()['window']
+            ctypes.windll.user32.SetWindowPos(hwnd, -1, 0, 0, 0, 0, 0x0001 | 0x0002)
             
             # --- SHADER SETUP ---
             from src.systems.renderer import ShaderRenderer
@@ -66,7 +72,14 @@ class Game:
         except ImportError:
             print("ModernGL not found. Using standard software rendering.")
             self.use_shaders = False
-            self.screen = pygame.display.set_mode((WIDTH, HEIGHT), flags=pygame.SCALED, vsync=1)
+            # NOFRAME for borderless fullscreen windowed mode
+            self.screen = pygame.display.set_mode((WIDTH, HEIGHT), flags=pygame.NOFRAME, vsync=1)
+            
+            # Position window at top-left corner
+            import ctypes
+            hwnd = pygame.display.get_wm_info()['window']
+            ctypes.windll.user32.SetWindowPos(hwnd, -1, 0, 0, 0, 0, 0x0001 | 0x0002)
+            
             self.display = self.screen # Alias display to screen so render logic works
             self.canvas = self.screen  # For compatibility
 
